@@ -64,6 +64,8 @@ function posts(tabla, pagina = 1, limite = 10) {
     });
 }
 
+
+
 function unpost(tabla, pagina = 1, limite = 10, userID = null, userName = null) {
     return new Promise((resolve, reject) => {
         // Calcular el offset para obtener los registros en orden inverso
@@ -243,6 +245,44 @@ function crearPost(tabla, data) {
     });
 }
 
+
+function emisoras(tabla, tipo = "E") {
+    return new Promise((resolve, reject) => {
+
+        // Consulta SQL para obtener los posts en orden inverso por id
+        const query = `SELECT * FROM ?? WHERE Tipo = ?`;
+
+
+        // Ejecutar la consulta principal
+        conexion.query(query, [tabla, tipo], (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+
+            resolve({ emisoras: rows });
+        });
+    });
+}
+
+
+function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
+    return new Promise((resolve, reject) => {
+
+        // Consulta SQL para obtener los posts en orden inverso por id
+        const query = `SELECT * FROM ?? WHERE Tipo IN (? , ?)`;
+
+
+        // Ejecutar la consulta principal
+        conexion.query(query, [tabla, tipo, tipo2], (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+
+            resolve({ trabajos: rows });
+        });
+    });
+}
+
 module.exports = {
     posts,
     anuncios,
@@ -252,4 +292,6 @@ module.exports = {
     unlikePost,
     crearPost,
     deletePost,
+    emisoras,
+    Trabajos,
 };
