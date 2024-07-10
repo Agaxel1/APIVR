@@ -12,8 +12,8 @@ const app = express();
 
 // Middleware
 app.use(morgan('dev'));
-app.use(bodyParser.json({ limit: '50mb' })); // Aumenta el límite a 50MB
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Aumenta el límite para datos de formularios
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(cors()); // Usa el middleware cors
 
 // Configuración
