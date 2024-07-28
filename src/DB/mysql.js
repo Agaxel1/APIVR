@@ -239,8 +239,15 @@ function unAnuncio(tabla, pagina = 1, limite = 10, userID = null, userName = nul
 function crearPost(tabla, data) {
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO ${mysql.escapeId(tabla)} SET ?`;
-        conexion.query(query, data, (err, rows) => {
-            return err ? reject(err) : resolve(rows);
+        conexion.query(query, data, (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            // Recuperar el post creado
+            const createdPostQuery = `SELECT * FROM ${mysql.escapeId(tabla)} WHERE id = ?`;
+            conexion.query(createdPostQuery, [result.insertId], (err, rows) => {
+                return err ? reject(err) : resolve(rows[0]);
+            });
         });
     });
 }
