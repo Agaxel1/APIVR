@@ -1,23 +1,6 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const DISCORD_TOKEN = 'OTkyNDYxOTY3MTQ5MjUyNzA4.GKC7FI.hDGVi4Na4ni_gbyM5ZjNOhw1CrQvMUPZZ7aPOU';
+const { EmbedBuilder } = require('discord.js');
+const { client } = require('../../index');  // Import the client from index.js
 const CHANNEL_ID = '1267127952496132118';
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
-
-let isReady = false;
-
-client.once('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-    isReady = true;
-});
-
-client.login(DISCORD_TOKEN).catch(console.error);
-
-async function waitForClientReady() {
-    while (!isReady) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
-}
 
 const TABLA = 'AnunciosYDeep';
 
@@ -46,7 +29,6 @@ module.exports = function (dbInyectada) {
 
     async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
         try {
-            await waitForClientReady();
             const channel = await client.channels.fetch(CHANNEL_ID);
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
