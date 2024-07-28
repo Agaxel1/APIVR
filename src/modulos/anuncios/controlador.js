@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { client } = require('../../index');  // Import the client from index.js
+const { client, waitForClientReady } = require('../../discordClient');  // Import the client and waitForClientReady
 const CHANNEL_ID = '1267127952496132118';
 
 const TABLA = 'AnunciosYDeep';
@@ -29,9 +29,7 @@ module.exports = function (dbInyectada) {
 
     async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
         try {
-            if (!client || !client.channels) {
-                throw new Error('El cliente de Discord no está inicializado correctamente');
-            }
+            await waitForClientReady();
             const channel = await client.channels.fetch(CHANNEL_ID);
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
