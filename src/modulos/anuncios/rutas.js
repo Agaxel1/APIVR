@@ -51,12 +51,27 @@ async function getUserAnuncios(req, res) {
 
 async function crearPost(req, res) {
     try {
-        const posts = await controlador.crearPost(req.body);
+        const post = await controlador.crearPost(req.body);
         respuestas.success(req, res, "Agregado correctamente", 201);
+
+        // Enviar el mensaje embebido a Discord
+        const { sendEmbedMessage } = require('../../discordClient');
+        const embed = {
+            title: "Nuevo Anuncio",
+            description: `Se ha creado un nuevo anuncio con las siguientes características:`,
+            fields: [
+                { name: 'Título', value: post.title },
+                { name: 'Descripción', value: post.description },
+                { name: 'Precio', value: post.price.toString() },
+                { name: 'Usuario', value: post.user }
+            ],
+            timestamp: new Date(),
+        };
+        sendEmbedMessage(embed);
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
-};
+}
 
 async function deletePost(req, res) {
     const { postId } = req.body;
