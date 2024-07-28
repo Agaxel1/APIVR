@@ -16,9 +16,8 @@ module.exports = function (dbInyectada) {
         return db.unAnuncio(TABLA, pagina, limite, user, name, tipo);
     }
 
-    async function crearPost(body) {
-        const post = await db.crearPost(TABLA, body);
-        return post;
+    function crearPost(body) {
+        return db.crearPost(TABLA, body);
     }
 
     function deletePost(postId) {

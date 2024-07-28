@@ -11,7 +11,7 @@ module.exports = {
         database: process.env.MYSQL_DB,
     },
     discord: {
-        token: 'OTkyNDYxOTY3MTQ5MjUyNzA4.GKC7FI.hDGVi4Na4ni_gbyM5ZjNOhw1CrQvMUPZZ7aPOU',
-        channelId: '1267127952496132118'
+        token: process.env.DISCORD_TOKEN,
+        channelId: process.env.DISCORD_CHANNEL_ID
     }
 }
