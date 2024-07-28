@@ -51,8 +51,12 @@ async function getUserAnuncios(req, res) {
 
 async function crearPost(req, res) {
     try {
-        const posts = await controlador.crearPost(req.body);
+        const post = await controlador.crearPost(req.body);
         respuestas.success(req, res, "Agregado correctamente", 201);
+
+        // Enviar mensaje a Discord
+        const { tipo, skin, user_id, Name, content, creation_date } = req.body;
+        await controlador.enviarMensajeDiscord(tipo, skin, user_id, Name, content, creation_date);
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
