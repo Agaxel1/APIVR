@@ -29,6 +29,9 @@ module.exports = function (dbInyectada) {
 
     async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
         try {
+            if (!client || !client.channels) {
+                throw new Error('El cliente de Discord no está inicializado correctamente');
+            }
             const channel = await client.channels.fetch(CHANNEL_ID);
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
