@@ -1,0 +1,80 @@
+*   [33m225a6da[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Resolvió conflictos de merge
+[31m|[m[32m\[m  
+[31m|[m * [33mbdd6c93[m[33m ([m[1;31morigin/main[m[33m)[m Delete src/discordClient.js
+[31m|[m * [33m71be75b[m Delete .env
+* [32m|[m [33m20fd9fe[m Resolviendo
+* [32m|[m [33mdb71cd1[m Resolviendo
+* [32m|[m [33m691b55c[m Resolviendo
+* [32m|[m [33me0b2960[m Regresando
+[33m|[m[32m\[m[32m|[m 
+[33m|[m * [33ma96b301[m Arreglando
+[33m|[m * [33mf07ed51[m Resolviendo
+[33m|[m * [33m4e375da[m Cambio controlador
+[33m|[m * [33m3eb8afe[m Provando cosa nueva
+[33m|[m * [33md0f20bd[m Cosas nuevas index
+[33m|[m * [33mdcd17b1[m Provando cosa nueva
+[33m|[m * [33m39552f6[m Cambios
+[33m|[m * [33m0242075[m Cambio controlador
+[33m|[m * [33m38ef8ca[m Cambios
+[33m|[m * [33m17654bc[m Resolviendo
+[33m|[m * [33m2672440[m Cambios
+[33m|[m * [33m93b55e9[m Arreglando
+[33m|[m * [33md9caa19[m Solucionar error
+[33m|[m * [33m6cc3453[m Discord
+[33m|[m * [33mcce8b07[m Regresando como estaba
+[33m|[m * [33me340e1d[m Posible solucion
+[33m|[m * [33m6dfc9dd[m De nuevo todo
+[33m|[m * [33mfb61f1d[m Posible solucion
+[33m|[m * [33m0f16305[m Error
+[33m|[m * [33m03142be[m Regresando
+[33m|[m * [33mcf5e155[m Error
+[33m|[m * [33m3ac5296[m Contenido para discord
+[33m|[m * [33mb27e9ca[m Borrando ecosystem
+[33m|[m * [33mf667295[m Moviendo de lugar carpeta ecosystem
+[33m|[m * [33me021fbc[m Creando archivo ecosystem
+[33m|[m * [33m5a52166[m Subiendo a 100mb lo de imagenes
+[33m|[m * [33me34e7ce[m Actualizacion celulares
+[33m|[m * [33m51b73bf[m Aumento de caracteres body
+[33m|[m * [33mc5f7d61[m Volver a node
+[33m|[m * [33m09d387a[m Volver a nodemon en vez de node
+[33m|[m * [33m9220c97[m Cambio de nombre de tabla AnunciosYDeep
+[33m|[m * [33md8996b0[m Error en Mysql_db arreglado
+[33m|[m * [33m2530404[m Cambio de DB y nodemon
+[33m|[m * [33m52ee310[m Subiendo el proyecto desde el inicio
+* [33me150ea5[m Resolviendo
+* [33me0a9379[m Resolviendo
+* [33mc0f084f[m Cambios
+* [33mebc76cb[m Arreglando
+* [33m2c01a54[m Resolviendo
+* [33m48491b2[m Cambio controlador
+* [33mccad64d[m Provando cosa nueva
+* [33m21a6a5a[m Cosas nuevas index
+* [33md5a6cb8[m Provando cosa nueva
+* [33m8b3e0ea[m Cambios
+* [33m78ef656[m Cambio controlador
+* [33m3c95653[m Cambios
+* [33m25db2ce[m Resolviendo
+* [33me957a04[m Cambios
+* [33m164dbe5[m Arreglando
+* [33m9f33470[m Solucionar error
+* [33m534d5e0[m Discord
+* [33m13102d3[m Regresando como estaba
+* [33m4d22951[m Posible solucion
+* [33mb6f6040[m De nuevo todo
+* [33m1cc8c19[m Posible solucion
+* [33m5b00dec[m Error
+* [33m8863336[m Regresando
+* [33mb31caa7[m Error
+* [33m488eb7a[m Contenido para discord
+* [33m0853452[m Borrando ecosystem
+* [33mde585dc[m Moviendo de lugar carpeta ecosystem
+* [33m3ce9be5[m Creando archivo ecosystem
+* [33m53fe018[m Subiendo a 100mb lo de imagenes
+* [33m1999eef[m Actualizacion celulares
+* [33m6fe57db[m Aumento de caracteres body
+* [33mde5452f[m Volver a node
+* [33m67f2fc6[m Volver a nodemon en vez de node
+* [33m4d91c0f[m Cambio de nombre de tabla AnunciosYDeep
+* [33mdc05043[m Error en Mysql_db arreglado
+* [33m7910f7e[m Cambio de DB y nodemon
+* [33m3991d1e[m Subiendo el proyecto desde el inicio
