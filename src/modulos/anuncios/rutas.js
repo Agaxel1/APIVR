@@ -1,7 +1,7 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
-const discordClient = require('../..discordClient'); // ajusta el path según tu estructura de proyecto
+const discordClient = require('../../discordClient'); // ajusta el path según tu estructura de proyecto
 
 const router = express.Router();
 
