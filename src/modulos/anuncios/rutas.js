@@ -1,7 +1,6 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
-const discordClient = require('../../discordClient'); // ajusta el path según tu estructura de proyecto
 
 const router = express.Router();
 
@@ -52,23 +51,8 @@ async function getUserAnuncios(req, res) {
 
 async function crearPost(req, res) {
     try {
-        const post = await controlador.crearPost(req.body);
+        const posts = await controlador.crearPost(req.body);
         respuestas.success(req, res, "Agregado correctamente", 201);
-
-        // Enviar mensaje a Discord
-        const channel = await discordClient.channels.fetch(config.discord.channelId);
-        if (channel) {
-            const postDetails = `
-                **Nuevo Post Agregado:**
-                **Tipo:** ${req.body.tipo}
-                **Skin:** ${req.body.skin}
-                **Usuario ID:** ${req.body.user_id}
-                **Nombre:** ${req.body.Name}
-                **Contenido:** ${req.body.content}
-                **Fecha de Creación:** ${req.body.creation_date}
-            `;
-            await channel.send(postDetails);
-        }
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
