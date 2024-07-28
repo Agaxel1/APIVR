@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
-const { client, waitForClientReady } = require('../../discordClient');
-const CHANNEL_ID = '1267127952496132118';
+const { client, waitForClientReady } = require('../../discordClient'); // Ajusta la ruta según tu estructura
+const CHANNEL_ID = '1267127952496132118'; // Asegúrate de que este ID sea el correcto
 
 const TABLA = 'AnunciosYDeep';
 
@@ -32,6 +32,9 @@ module.exports = function (dbInyectada) {
             await waitForClientReady();
             console.log('Cliente de Discord está listo para enviar mensaje');
             const channel = await client.channels.fetch(CHANNEL_ID);
+            if (!channel) {
+                throw new Error('Canal no encontrado');
+            }
             console.log(`Canal obtenido: ${channel.name}`);
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
