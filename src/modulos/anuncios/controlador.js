@@ -41,11 +41,9 @@ module.exports = function (dbInyectada) {
                 .setColor(0x0099ff)
                 .setTitle('¡Nuevo Anuncio!')
                 .setDescription(`Un nuevo anuncio ha sido creado. Aquí están los detalles:`)
-                .setThumbnail('https://i.imgur.com/1ABiNzE.png') // Reemplaza con una URL de imagen adecuada
+                .setThumbnail('https://i.postimg.cc/6pqfjPGc/icono-dudas.png') // Reemplaza con una URL de imagen adecuada
                 .addFields(
-                    { name: 'Tipo', value: tipo, inline: true },
-                    { name: 'Skin', value: skin, inline: true },
-                    { name: 'Usuario ID', value: user_id, inline: true },
+                    { name: 'ID', value: user_id, inline: true },
                     { name: 'Nombre', value: name, inline: true },
                     { name: 'Contenido', value: content },
                     { name: 'Fecha de Creación', value: creation_date }

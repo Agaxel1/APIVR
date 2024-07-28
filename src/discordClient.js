@@ -1,5 +1,6 @@
+require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
-const DISCORD_TOKEN = 'MTI1MjA0MTg5OTg4MDIxODc4OA.G9Vm5p.qP_H1O2Gv8mDhzEztLGlxXVUl9FOYXm-qGCNUs';
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
