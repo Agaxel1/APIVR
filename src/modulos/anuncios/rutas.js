@@ -54,7 +54,7 @@ async function crearPost(req, res) {
         const post = await controlador.crearPost(req.body);
         respuestas.success(req, res, "Agregado correctamente", 201);
 
-        // Enviar el mensaje embebido a Discord
+        // Enviar el mensaje embebido a Discord sin interferir con la respuesta al cliente
         const { sendEmbedMessage } = require('../../discordClient');
         const embed = {
             title: "Nuevo Anuncio",
@@ -67,7 +67,9 @@ async function crearPost(req, res) {
             ],
             timestamp: new Date(),
         };
-        sendEmbedMessage(embed);
+
+        // Envía el mensaje embebido de forma asíncrona y sin bloquear la respuesta HTTP
+        sendEmbedMessage(embed).catch(console.error);
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
