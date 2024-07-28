@@ -36,6 +36,7 @@ module.exports = function (dbInyectada) {
                 throw new Error('Canal no encontrado');
             }
             console.log(`Canal obtenido: ${channel.name}`);
+<<<<<<< HEAD
             
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
@@ -44,13 +45,26 @@ module.exports = function (dbInyectada) {
                 .setThumbnail('https://i.postimg.cc/6pqfjPGc/icono-dudas.png') // Reemplaza con una URL de imagen adecuada
                 .addFields(
                     { name: 'Usuario', value: user_id, inline: true },
+=======
+            const embed = new EmbedBuilder()
+                .setColor(0x0099ff)
+                .setTitle('Nuevo Anuncio')
+                .addFields(
+                    { name: 'Tipo', value: tipo, inline: true },
+                    { name: 'Skin', value: skin, inline: true },
+                    { name: 'Usuario ID', value: user_id, inline: true },
+>>>>>>> a96b30118592945310edb3dcdf3cb4dc8a579937
                     { name: 'Nombre', value: name, inline: true },
                     { name: 'Contenido', value: content },
                     { name: 'Fecha de Creación', value: creation_date }
                 )
+<<<<<<< HEAD
                 .setFooter({ text: '¡Gracias por tu atención!' })
                 .setTimestamp();
 
+=======
+                .setTimestamp();
+>>>>>>> a96b30118592945310edb3dcdf3cb4dc8a579937
             await channel.send({ embeds: [embed] });
             console.log('Mensaje enviado a Discord');
         } catch (error) {
