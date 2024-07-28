@@ -1,6 +1,12 @@
 const db = require('../../DB/mysql');
+const { Client, Intents, MessageEmbed } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const DISCORD_TOKEN = 'OTkyNDYxOTY3MTQ5MjUyNzA4.GKC7FI.hDGVi4Na4ni_gbyM5ZjNOhw1CrQvMUPZZ7aPOU';
+const CHANNEL_ID = '1267127952496132118';
 
-const TABLA = 'AnunciosYDeep';
+client.login(DISCORD_TOKEN);
+
+const TABLA = 'anunciosydeep';
 
 module.exports = function (dbInyectada) {
     let db = dbInyectada;
@@ -12,6 +18,7 @@ module.exports = function (dbInyectada) {
     function anuncios(pagina = 1, limite = 10, tipo = "A") {
         return db.anuncios(TABLA, pagina, limite, tipo);
     }
+
     function unAnuncio(pagina = 1, limite = 10, user = null, name = null, tipo = "A") {
         return db.unAnuncio(TABLA, pagina, limite, user, name, tipo);
     }
@@ -24,10 +31,32 @@ module.exports = function (dbInyectada) {
         return db.deletePost(TABLA, postId);
     }
 
+    async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
+        try {
+            const channel = await client.channels.fetch(CHANNEL_ID);
+            const embed = new MessageEmbed()
+                .setColor(0x0099ff)
+                .setTitle('Nuevo Anuncio')
+                .addFields(
+                    { name: 'Tipo', value: tipo, inline: true },
+                    { name: 'Skin', value: skin, inline: true },
+                    { name: 'Usuario ID', value: user_id, inline: true },
+                    { name: 'Nombre', value: name, inline: true },
+                    { name: 'Contenido', value: content },
+                    { name: 'Fecha de Creación', value: creation_date }
+                )
+                .setTimestamp();
+            await channel.send({ embeds: [embed] });
+        } catch (error) {
+            console.error('Error al enviar mensaje a Discord:', error);
+        }
+    }
+
     return {
         anuncios,
         unAnuncio,
         crearPost,
-        deletePost
+        deletePost,
+        enviarMensajeDiscord
     };
 };
