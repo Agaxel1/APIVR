@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { client, waitForClientReady } = require('../../discordClient');  // Import the client and waitForClientReady
+const { client, waitForClientReady } = require('../../discordClient');
 const CHANNEL_ID = '1267127952496132118';
 
 const TABLA = 'AnunciosYDeep';
@@ -30,7 +30,9 @@ module.exports = function (dbInyectada) {
     async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
         try {
             await waitForClientReady();
+            console.log('Cliente de Discord está listo para enviar mensaje');
             const channel = await client.channels.fetch(CHANNEL_ID);
+            console.log(`Canal obtenido: ${channel.name}`);
             const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
                 .setTitle('Nuevo Anuncio')
@@ -44,6 +46,7 @@ module.exports = function (dbInyectada) {
                 )
                 .setTimestamp();
             await channel.send({ embeds: [embed] });
+            console.log('Mensaje enviado a Discord');
         } catch (error) {
             console.error('Error al enviar mensaje a Discord:', error);
         }
