@@ -52,7 +52,6 @@ async function getUserAnuncios(req, res) {
 async function crearPost(req, res) {
     try {
         const post = await controlador.crearPost(req.body);
-        respuestas.success(req, res, "Agregado correctamente", 201);
 
         // Enviar el mensaje embebido a Discord
         const { sendEmbedMessage } = require('../../discordClient');
@@ -68,6 +67,9 @@ async function crearPost(req, res) {
             timestamp: new Date(),
         };
         sendEmbedMessage(embed);
+
+        // Enviar la respuesta HTTP
+        respuestas.success(req, res, "Agregado correctamente", 201);
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
