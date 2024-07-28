@@ -1,6 +1,6 @@
 const db = require('../../DB/mysql');
-const { Client, Intents, MessageEmbed } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 const DISCORD_TOKEN = 'OTkyNDYxOTY3MTQ5MjUyNzA4.GKC7FI.hDGVi4Na4ni_gbyM5ZjNOhw1CrQvMUPZZ7aPOU';
 const CHANNEL_ID = '1267127952496132118';
 
@@ -34,7 +34,7 @@ module.exports = function (dbInyectada) {
     async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
         try {
             const channel = await client.channels.fetch(CHANNEL_ID);
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor(0x0099ff)
                 .setTitle('Nuevo Anuncio')
                 .addFields(
