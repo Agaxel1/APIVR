@@ -16,6 +16,7 @@ async function waitForClientReady() {
     while (!isReady) {
         await new Promise(resolve => setTimeout(resolve, 100));
     }
+    console.log('El cliente de Discord está listo');
 }
 
 module.exports = { client, waitForClientReady };
