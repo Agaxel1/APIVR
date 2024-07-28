@@ -24,7 +24,7 @@ async function getAnuncios(req, res) {
         };
         respuestas.success(req, res, response, 200);
     } catch (err) {
-        respuestas.error(req, res, err, 500);
+        respuestas.error(req, res, err.message, 500); // Cambia a err.message para evitar posibles objetos de error
     }
 }
 
@@ -45,7 +45,7 @@ async function getUserAnuncios(req, res) {
         };
         respuestas.success(req, res, response, 200);
     } catch (err) {
-        respuestas.error(req, res, err, 500);
+        respuestas.error(req, res, err.message, 500); // Cambia a err.message para evitar posibles objetos de error
     }
 }
 
@@ -71,7 +71,11 @@ async function crearPost(req, res) {
         // Envía el mensaje embebido de forma asíncrona y sin bloquear la respuesta HTTP
         sendEmbedMessage(embed).catch(console.error);
     } catch (err) {
-        respuestas.error(req, res, err, 500);
+        if (!res.headersSent) {
+            respuestas.error(req, res, err.message, 500); // Cambia a err.message para evitar posibles objetos de error
+        } else {
+            console.error('Error después de que la respuesta ya fue enviada:', err);
+        }
     }
 }
 
@@ -81,7 +85,7 @@ async function deletePost(req, res) {
         await controlador.deletePost(postId);
         respuestas.success(req, res, "Post eliminado correctamente", 200);
     } catch (err) {
-        respuestas.error(req, res, err, 500);
+        respuestas.error(req, res, err.message, 500); // Cambia a err.message para evitar posibles objetos de error
     }
 }
 
