@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-const DISCORD_TOKEN = 'OTkyNDYxOTY3MTQ5MjUyNzA4.GKC7FI.hDGVi4Na4ni_gbyM5ZjNOhw1CrQvMUPZZ7aPOU';
+const DISCORD_TOKEN = 'MTI1MjA0MTg5OTg4MDIxODc4OA.G9Vm5p.qP_H1O2Gv8mDhzEztLGlxXVUl9FOYXm-qGCNUs';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
