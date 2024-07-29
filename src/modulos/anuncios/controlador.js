@@ -28,7 +28,7 @@ module.exports = function (dbInyectada) {
         return db.deletePost(TABLA, postId);
     }
 
-    async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date) {
+    async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date, base64Image) {
         try {
             await waitForClientReady();
             console.log('Cliente de Discord está listo para enviar mensaje');
@@ -41,9 +41,8 @@ module.exports = function (dbInyectada) {
             const embed = new EmbedBuilder()
                 .setColor(0x1E90FF) // Un color azul más suave
                 .setTitle('📢 ¡Nuevo Anuncio! 📢')
-                .setDescription(`Se ha creado un nuevo anuncio. Aquí tienes los detalles:`)
-                .setThumbnail('https://i.postimg.cc/6pqfjPGc/icono-dudas.png') // Imagen destacada
-                .setAuthor({ name: 'Anuncios Importantes', iconURL: 'https://i.postimg.cc/6pqfjPGc/icono-dudas.png' })
+                .setThumbnail('https://i.postimg.cc/ZRQ9wJXF/anuncio.png') // Imagen destacada
+                .setAuthor({ name: 'Anuncios Importantes', iconURL: 'https://i.postimg.cc/ZRQ9wJXF/anuncio.png' })
                 .addFields(
                     { name: 'ID del Usuario', value: `Usuario#${user_id}`, inline: true },
                     { name: 'Contenido', value: content }
@@ -51,7 +50,14 @@ module.exports = function (dbInyectada) {
                 .setFooter({ text: '¡Gracias por tu atención!' })
                 .setTimestamp();
 
-            await channel.send({ embeds: [embed] });
+            // Convierte la imagen base64 en un buffer
+            const imageBuffer = Buffer.from(base64Image, 'base64');
+
+            // Añade la imagen al embed
+            embed.setImage('attachment://image.png');
+
+            // Envía el embed junto con la imagen
+            await channel.send({ embeds: [embed], files: [{ attachment: imageBuffer, name: 'image.png' }] });
             console.log('Mensaje enviado a Discord');
         } catch (error) {
             console.error('Error al enviar mensaje a Discord:', error);

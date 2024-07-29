@@ -1,6 +1,7 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
+const { NULL } = require('mysql/lib/protocol/constants/types');
 
 const router = express.Router();
 
@@ -55,8 +56,13 @@ async function crearPost(req, res) {
         respuestas.success(req, res, "Agregado correctamente", 201);
 
         // Enviar mensaje a Discord
-        const { tipo, skin, user_id, Name, content, creation_date } = req.body;
-        await controlador.enviarMensajeDiscord(tipo, skin, user_id, Name, content, creation_date);
+        const { tipo, skin, user_id, Name, content, creation_date, image_url } = req.body;
+        if (image_url == NULL) {
+            await controlador.enviarMensajeDiscord(tipo, skin, user_id, Name, content, creation_date, NULL);
+        } else {
+            await controlador.enviarMensajeDiscord(tipo, skin, user_id, Name, content, creation_date, image_url);
+        }
+
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
