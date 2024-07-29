@@ -1,6 +1,7 @@
+require('dotenv').config();
 const { EmbedBuilder } = require('discord.js');
 const { client, waitForClientReady } = require('../../discordClient'); // Ajusta la ruta según tu estructura
-const CHANNEL_ID = '1267127952496132118'; // Asegúrate de que este ID sea el correcto
+const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID; // Asegúrate de que este ID sea el correcto
 
 const TABLA = 'AnunciosYDeep';
 
