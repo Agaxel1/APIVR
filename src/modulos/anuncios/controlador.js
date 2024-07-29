@@ -36,17 +36,16 @@ module.exports = function (dbInyectada) {
                 throw new Error('Canal no encontrado');
             }
             console.log(`Canal obtenido: ${channel.name}`);
-            
+
             const embed = new EmbedBuilder()
-                .setColor(0x0099ff)
-                .setTitle('¡Nuevo Anuncio!')
-                .setDescription(`Un nuevo anuncio ha sido creado. Aquí están los detalles:`)
-                .setThumbnail('https://i.postimg.cc/6pqfjPGc/icono-dudas.png') // Reemplaza con una URL de imagen adecuada
+                .setColor(0x1E90FF) // Un color azul más suave
+                .setTitle('📢 ¡Nuevo Anuncio! 📢')
+                .setDescription(`Se ha creado un nuevo anuncio. Aquí tienes los detalles:`)
+                .setThumbnail('https://i.postimg.cc/6pqfjPGc/icono-dudas.png') // Imagen destacada
+                .setAuthor({ name: 'Anuncios Importantes', iconURL: 'https://i.postimg.cc/6pqfjPGc/icono-dudas.png' })
                 .addFields(
-                    { name: 'ID', value: user_id, inline: true },
-                    { name: 'Nombre', value: name, inline: true },
-                    { name: 'Contenido', value: content },
-                    { name: 'Fecha de Creación', value: creation_date }
+                    { name: 'ID del Usuario', value: `Usuario#${user_id}`, inline: true },
+                    { name: 'Contenido', value: content }
                 )
                 .setFooter({ text: '¡Gracias por tu atención!' })
                 .setTimestamp();
