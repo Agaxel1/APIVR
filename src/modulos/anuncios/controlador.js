@@ -2,6 +2,7 @@ require('dotenv').config();
 const { EmbedBuilder } = require('discord.js');
 const { client, waitForClientReady } = require('../../discordClient'); // Ajusta la ruta según tu estructura
 const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID; // Asegúrate de que este ID sea el correcto
+const CHANNEL_ID_DEEP = process.env.DISCORD_CHANNEL_ID;
 
 const TABLA = 'AnunciosYDeep';
 
@@ -32,30 +33,56 @@ module.exports = function (dbInyectada) {
         try {
             await waitForClientReady();
             console.log('Cliente de Discord está listo para enviar mensaje');
-            const channel = await client.channels.fetch(CHANNEL_ID);
+    
+            // Selecciona el canal adecuado según el tipo
+            let channelId;
+            if (tipo === "A") {
+                channelId = CHANNEL_ID; // Canal para anuncios
+            } else if (tipo === "D") {
+                channelId = CHANNEL_ID_DEEP; // Canal para deep web
+            } else {
+                throw new Error('Tipo de mensaje no reconocido');
+            }
+    
+            const channel = await client.channels.fetch(channelId);
             if (!channel) {
                 throw new Error('Canal no encontrado');
             }
             console.log(`Canal obtenido: ${channel.name}`);
-
-            const embed = new EmbedBuilder()
-                .setColor(0x1E90FF) // Un color azul más suave
-                .setTitle('📢 ¡Nuevo Anuncio! 📢')
-                .setThumbnail('https://i.postimg.cc/ZRQ9wJXF/anuncio.png') // Imagen destacada
-                .setAuthor({ name: 'Anuncios Importantes', iconURL: 'https://i.postimg.cc/ZRQ9wJXF/anuncio.png' })
-                .addFields(
-                    { name: 'ID del Usuario', value: `Usuario#${user_id}`, inline: true },
-                    { name: 'Contenido', value: content }
-                )
-                .setFooter({ text: '¡Gracias por tu atención!' })
-                .setTimestamp();
-
+    
+            // Crear el embed base
+            let embed = new EmbedBuilder().setTimestamp();
+    
+            if (tipo === "A") {
+                embed
+                    .setColor(0x1E90FF) // Un color azul más suave
+                    .setTitle('📢 ¡Nuevo Anuncio! 📢')
+                    .setThumbnail('https://i.postimg.cc/ZRQ9wJXF/anuncio.png') // Imagen destacada
+                    .setAuthor({ name: 'Anuncios Importantes', iconURL: 'https://i.postimg.cc/ZRQ9wJXF/anuncio.png' })
+                    .addFields(
+                        { name: 'ID del Usuario', value: `Usuario#${user_id}`, inline: true },
+                        { name: 'Contenido', value: content }
+                    )
+                    .setFooter({ text: '¡Gracias por tu atención!' });
+            } else if (tipo === "D") {
+                embed
+                    .setColor(0xFF4500) // Un color naranja oscuro
+                    .setTitle('💀 ¡Nuevo Post en DeepWeb! 💀')
+                    .setThumbnail('https://i.postimg.cc/xdVc9C9p/deepweb.png') // Imagen destacada para DeepWeb
+                    .setAuthor({ name: 'DeepWeb Noticias', iconURL: 'https://i.postimg.cc/xdVc9C9p/deepweb.png' })
+                    .addFields(
+                        { name: 'ID del Usuario', value: `Usuario#${user_id}`, inline: true },
+                        { name: 'Contenido', value: content }
+                    )
+                    .setFooter({ text: 'Mantén la discreción...' });
+            }
+    
             // Convierte la imagen base64 en un buffer
             const imageBuffer = Buffer.from(base64Image, 'base64');
-
+    
             // Añade la imagen al embed
             embed.setImage('attachment://image.png');
-
+    
             // Envía el embed junto con la imagen
             await channel.send({ embeds: [embed], files: [{ attachment: imageBuffer, name: 'image.png' }] });
             console.log('Mensaje enviado a Discord');
