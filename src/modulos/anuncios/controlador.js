@@ -33,7 +33,7 @@ module.exports = function (dbInyectada) {
         try {
             await waitForClientReady();
             console.log('Cliente de Discord está listo para enviar mensaje');
-
+    
             // Selecciona el canal adecuado según el tipo
             let channelId;
             if (tipo === "A") {
@@ -44,16 +44,16 @@ module.exports = function (dbInyectada) {
                 throw new Error('Tipo de mensaje no reconocido');
             }
             console.log(`Canal ID utilizado para tipo "${tipo}": ${channelId}`);
-
+    
             const channel = await client.channels.fetch(channelId);
             if (!channel) {
                 throw new Error('Canal no encontrado');
             }
             console.log(`Canal obtenido: ${channel.name}`);
-
+    
             // Crear el embed base
             let embed = new EmbedBuilder().setTimestamp();
-
+    
             if (tipo === "A") {
                 embed
                     .setColor(0x1E90FF) // Un color azul más suave
@@ -77,15 +77,18 @@ module.exports = function (dbInyectada) {
                     )
                     .setFooter({ text: 'Mantén la discreción...' });
             }
-
-            // Convierte la imagen base64 en un buffer
-            const imageBuffer = Buffer.from(base64Image, 'base64');
-
-            // Añade la imagen al embed
-            embed.setImage('attachment://image.png');
-
-            // Envía el embed junto con la imagen
-            await channel.send({ embeds: [embed], files: [{ attachment: imageBuffer, name: 'image.png' }] });
+    
+            // Solo añade la imagen si base64Image tiene valor
+            let files = [];
+            if (base64Image && base64Image.trim() !== '') {
+                // Convierte la imagen base64 en un buffer
+                const imageBuffer = Buffer.from(base64Image, 'base64');
+                files.push({ attachment: imageBuffer, name: 'image.png' });
+                embed.setImage('attachment://image.png');
+            }
+    
+            // Envía el embed junto con la imagen, si hay archivos
+            await channel.send({ embeds: [embed], files: files });
             console.log('Mensaje enviado a Discord');
         } catch (error) {
             console.error('Error al enviar mensaje a Discord:', error);
