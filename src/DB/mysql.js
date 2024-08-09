@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const config = require('../config');
+const crypto = require('crypto');
 
 const dbconfig = {
     host: config.mysql.host,
@@ -33,6 +34,45 @@ function conmysql() {
 }
 
 conmysql();
+
+//**Logueo */
+function hashPassword(password, salt) {
+    return crypto.createHash('sha256').update(password + salt).digest('hex');
+}
+
+
+function Login(tabla, usuario, password) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ?? WHERE Name = ?`;
+
+        // Ejecutar la consulta para obtener el usuario
+        conexion.query(query, [tabla, usuario], (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+
+            if (rows.length === 0) {
+                return resolve({ success: false, message: 'Usuario no encontrado' });
+            }
+
+            const user = rows[0];
+            const storedSalt = user.Salt;
+            const storedHash = user.Pass;
+
+            // Crear el hash de la contraseña ingresada usando el salt almacenado
+            const hashedPassword = hashPassword(password, storedSalt);
+
+            if (hashedPassword === storedHash) {
+                // Contraseña correcta
+                resolve({ success: true, message: 'Inicio de sesión exitoso', user: user });
+            } else {
+                // Contraseña incorrecta
+                resolve({ success: false, message: 'Contraseña incorrecta' });
+            }
+        });
+    });
+}
+
 
 function posts(tabla, pagina = 1, limite = 10) {
     return new Promise((resolve, reject) => {
@@ -284,6 +324,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    Login,
     posts,
     anuncios,
     unAnuncio,

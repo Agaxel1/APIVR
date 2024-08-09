@@ -7,6 +7,7 @@ const bodyParser = require('body-parser'); // Importa body-parser
 const posts = require('./modulos/posts/rutas');
 const anuncios = require('./modulos/anuncios/rutas');
 const datos = require('./modulos/Datos/rutas');
+const logueo = require('./modulos/Logueo/rutas');
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.set('port', config.app.port);
 app.use('/api/posts', posts);
 app.use('/api/anuncios', anuncios);
 app.use('/api/datos', datos);
+app.use('/api/logueo', logueo);
 
 module.exports = app;
