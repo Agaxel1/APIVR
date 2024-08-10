@@ -52,6 +52,7 @@ function Login(tabla, usuario, password) {
             }
 
             if (rows.length === 0) {
+                console.log(conexion.sql(query, [tabla, usuario]));
                 return resolve({ success: false, message: 'Usuario no encontrado' });
             }
 
