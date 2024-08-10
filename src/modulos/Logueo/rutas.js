@@ -4,14 +4,14 @@ const controlador = require('./index');
 
 const router = express.Router();
 
-router.get('/login', getLogin);
+router.post('/login', postLogin);
 router.get('/register', getRegister);
 
-async function getLogin(req, res) {
-    const usuario = req.query.usuario;
-    const password = req.query.password;
+async function postLogin(req, res) {
+    const usuario = req.body.usuario;
+    const password = req.body.password;
     try {
-        const { login} = await controlador.Login(usuario, password);
+        const { login } = await controlador.Login(usuario, password);
         const response = {
             content: login,
         };
@@ -25,7 +25,7 @@ async function getRegister(req, res) {
     const tipo = req.query.Tipo || "TI";
     const tipo2 = req.query.Tipo2 || "TL";
     try {
-        const { trabajos} = await controlador.Trabajos(tipo, tipo2);
+        const { trabajos } = await controlador.Trabajos(tipo, tipo2);
         const response = {
             content: trabajos,
         };
