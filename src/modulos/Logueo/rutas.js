@@ -2,9 +2,10 @@ const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const config = require('../../config');
 
 const router = express.Router();
-
 
 router.post('/login', login);
 router.post('/logout', logout);
@@ -18,36 +19,30 @@ async function login(req, res) {
     try {
         const user = await controlador.Login(req, usuario, password);
 
-        // Establecer datos de sesión
-        req.session.userID = user.ID; // Puedes almacenar más datos si es necesario
-        req.session.username = user.Name;
+        // Generar el token JWT
+        const token = jwt.sign({ userID: user.ID, username: user.Name }, config.jwt.secret, { expiresIn: '1d' });
 
-        respuestas.success(req, res, { message: 'Login exitoso' }, 200);
+        respuestas.success(req, res, { message: 'Login exitoso', token }, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
 
 async function checkAuth(req, res) {
+    const token = req.headers.authorization.split(' ')[1];
+
     try {
-        if (req.session && req.session.userID) {
-            respuestas.success(req, res, { authenticated: true }, 200);
-        } else {
-            respuestas.success(req, res, { authenticated: false }, 200);
-        }
+        const decoded = jwt.verify(token, config.jwt.secret);
+        respuestas.success(req, res, { authenticated: true, user: decoded }, 200);
     } catch (err) {
-        respuestas.error(req, res, 'Error al verificar autenticación', 500);
+        respuestas.success(req, res, { authenticated: false }, 200);
     }
 }
 
 async function logout(req, res) {
     try {
-        req.session.destroy(err => {
-            if (err) {
-                return respuestas.error(req, res, 'Error al cerrar sesión', 500);
-            }
-            respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
-        });
+        // Con JWT no necesitamos una acción de logout en el servidor
+        respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
     } catch (err) {
         respuestas.error(req, res, 'Error al cerrar sesión', 500);
     }

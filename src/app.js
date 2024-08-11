@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const config = require('./config');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 const posts = require('./modulos/posts/rutas');
 const anuncios = require('./modulos/anuncios/rutas');
@@ -15,18 +15,6 @@ const app = express();
 app.use(morgan('dev'));
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
-
-app.use(session({
-    secret: config.session.secret, // Tu secreto de sesión
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: false, // Cambia a true si estás usando HTTPS
-        sameSite: 'Lax',
-        maxAge: 1000 * 60 * 60 * 24 // 1 día
-    }
-}));
 
 const corsOptions = {
     origin: function (origin, callback) {
