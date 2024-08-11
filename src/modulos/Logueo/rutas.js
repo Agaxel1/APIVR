@@ -2,6 +2,7 @@ const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -17,18 +18,26 @@ async function login(req, res) {
 
     try {
         const user = await controlador.Login(req, usuario, password);
-        respuestas.success(req, res, user, 200);
+        const token = jwt.sign({ id: user.ID }, 'tu_secreto', { expiresIn: '10m' }); // Genera un token con 10 minutos de validez
+        respuestas.success(req, res, { token }, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
 
 async function checkAuth(req, res) {
-    console.log('Estado de sesión:', req.session); // Depuración
-    if (req.session.user) {
-        res.json({ authenticated: true, user: req.session.user });
-    } else {
-        res.json({ authenticated: false });
+    const token = req.headers.authorization.split(' ')[1];
+
+    if (!token) {
+        return respuestas.error(req, res, 'No autenticado', 401);
+    }
+
+    try {
+        const decoded = jwt.verify(token, 'tu_secreto');
+        // Puedes hacer algo más con el decoded, como verificar el usuario en la base de datos
+        respuestas.success(req, res, 'Autenticado', 200);
+    } catch (err) {
+        respuestas.error(req, res, 'Token inválido o expirado', 401);
     }
 }
 

@@ -10,11 +10,6 @@ module.exports = function (dbInyectada) {
     async function Login(req, usuario, password) {
         try {
             const user = await db.Login(TABLA, usuario, password);
-            req.session.user = {
-                id: user.ID,
-                username: user.Name
-            };
-            console.log('Sesión establecida:', req.session); // Depuración
             return user;
         } catch (error) {
             throw error;
@@ -22,15 +17,7 @@ module.exports = function (dbInyectada) {
     }
 
     function Logout(req) {
-        return new Promise((resolve, reject) => {
-            req.session.destroy(err => {
-                if (err) {
-                    reject('Error al cerrar sesión');
-                } else {
-                    resolve('Sesión cerrada exitosamente');
-                }
-            });
-        });
+        
     }
 
     async function registerUser(username, email, password, token) {
