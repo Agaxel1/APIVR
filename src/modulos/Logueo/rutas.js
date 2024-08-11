@@ -18,12 +18,13 @@ async function login(req, res) {
 
     try {
         const user = await controlador.Login(req, usuario, password);
-
         // Generar el token JWT
         const token = jwt.sign({ userID: user.ID, username: user.Name }, config.jwt.secret, { expiresIn: '1d' });
+        console.log('Generated token:', token);
 
         respuestas.success(req, res, { message: 'Login exitoso', token }, 200);
     } catch (err) {
+        console.error('Login error:', err);
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
