@@ -10,13 +10,11 @@ module.exports = function (dbInyectada) {
     async function Login(req, usuario, password) {
         try {
             const user = await db.Login(TABLA, usuario, password);
-
-            // Guardar información mínima de la sesión en la memoria (no en la base de datos)
             req.session.user = {
                 id: user.ID,
                 username: user.Name
             };
-
+            console.log('Sesión establecida:', req.session); // Depuración
             return user;
         } catch (error) {
             throw error;

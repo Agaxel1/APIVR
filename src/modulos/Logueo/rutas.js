@@ -23,6 +23,7 @@ async function login(req, res) {
 }
 
 async function checkAuth(req, res) {
+    console.log('Estado de sesión:', req.session); // Depuración
     if (req.session.user) {
         res.json({ authenticated: true, user: req.session.user });
     } else {
