@@ -98,19 +98,20 @@ async function registerUser(usuario, password, email) {
             .then(() => {
                 conexion.query(insertQuery, [usuario, hashedPassword, email, token], (err, result) => {
                     if (err) {
-                        console.error('Error al insertar en la base de datos:', err);  // Agregar este mensaje
+                        console.error('Error al insertar en la base de datos:', err);
                         return reject(err);
                     }
-                    console.log('Usuario registrado exitosamente:', result);  // Agregar este mensaje
+                    console.log('Usuario registrado exitosamente:', result);
                     resolve(result);
                 });
             })
             .catch(err => {
-                console.error('Error al enviar el correo:', err);  // Agregar este mensaje
+                console.error('Error al enviar el correo:', err);
                 reject(err);
             });
     });
 }
+
 
 function confirmUserRegistration(token) {
     return new Promise((resolve, reject) => {

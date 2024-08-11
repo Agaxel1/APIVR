@@ -23,6 +23,7 @@ async function register(req, res) {
     const { username, email, password, passwordConfirm } = req.body;
 
     if (password !== passwordConfirm) {
+        console.log('Las contraseñas no coinciden');
         return respuestas.error(req, res, 'Las contraseñas no coinciden', 400);
     }
 
@@ -31,6 +32,7 @@ async function register(req, res) {
         await controlador.registerUser(username, email, password, token);
         respuestas.success(req, res, 'Registro exitoso. Por favor, revisa tu correo para confirmar tu registro.', 200);
     } catch (err) {
+        console.error('Error en el registro:', err);
         respuestas.error(req, res, err.message || 'Error al registrar el usuario', 500);
     }
 }
