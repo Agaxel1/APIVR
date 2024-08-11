@@ -29,7 +29,12 @@ async function login(req, res) {
 }
 
 async function checkAuth(req, res) {
-    const token = req.headers.authorization.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return respuestas.success(req, res, { authenticated: false }, 200);
+    }
+
+    const token = authHeader.split(' ')[1];
 
     try {
         const decoded = jwt.verify(token, config.jwt.secret);
