@@ -9,6 +9,7 @@ router.post('/login', login);
 router.post('/logout', logout);
 router.post('/register', register); // Cambiado de GET a POST para manejar el registro
 router.get('/confirm/:token', confirm);
+router.get('/checkAuth', checkAuth);
 
 async function login(req, res) {
     const { usuario, password } = req.body;
@@ -17,6 +18,14 @@ async function login(req, res) {
         respuestas.success(req, res, user, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
+    }
+}
+
+async function checkAuth(req, res) {
+    if (req.session.user) {  // Verifica si el usuario está en la sesión
+        res.json({ authenticated: true, user: req.session.user });
+    } else {
+        res.json({ authenticated: false });
     }
 }
 
