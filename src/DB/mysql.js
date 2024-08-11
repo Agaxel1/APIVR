@@ -1,6 +1,7 @@
 const mysql = require('mysql');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const config = require('../config');
-const bcrypt = require('bcrypt');
 
 const dbconfig = {
     host: config.mysql.host,
@@ -35,12 +36,29 @@ function conmysql() {
 
 conmysql();
 
+async function sendMail(recipientEmail, body) {
+    const transporter = nodemailer.createTransport(config.email);
+
+    const mailOptions = {
+        from: config.email.auth.user,
+        to: recipientEmail,
+        subject: 'Confirmación de Registro',
+        html: body,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Correo electrónico enviado');
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+    }
+}
 
 function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
         const query = `SELECT Pass, Salt FROM ${tabla} WHERE Name = ?`;
 
-        conexion.query(query, [usuario], async (error, results) => {
+        conexion.query(query, [usuario], (error, results) => {
             if (error) {
                 return reject(error);
             }
@@ -49,24 +67,88 @@ function Login(tabla, usuario, password) {
                 return reject('Usuario no encontrado');
             }
 
-            const { Pass: hashedPassword, Salt: storedSalt } = results[0];
+            const { Pass: hashedPassword, Salt: salt } = results[0];
 
-            // Comparar la contraseña ingresada con el hash almacenado
-            bcrypt.hash(password, storedSalt, (err, hashToCompare) => {
+            // Generar el hash de la contraseña ingresada usando el salt almacenado
+            const hashToCompare = crypto.createHash('sha256').update(password + salt).digest('hex').toLowerCase();
+
+            // Comparar el hash generado con el hash almacenado
+            if (hashToCompare === hashedPassword.toLowerCase()) {
+                resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
+            } else {
+                reject('Contraseña incorrecta');  // Contraseña incorrecta
+            }
+        });
+    });
+}
+async function registerUser(usuario, password, email) {
+    return new Promise((resolve, reject) => {
+        const token = crypto.randomBytes(32).toString('hex');
+        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex').toLowerCase();
+
+        const insertQuery = 'INSERT INTO registro_pendiente (username, password_hash, email, token) VALUES (?, ?, ?, ?)';
+        const confirmationLink = `https://api.vida-roleplay.com/api/logueo/confirm/${token}`;
+        const emailBody = `
+            <p>Hola ${usuario},</p>
+            <p>Por favor, confirma tu registro haciendo clic en el siguiente enlace:</p>
+            <a href="${confirmationLink}">Confirmar Registro</a>
+        `;
+
+        sendMail(email, emailBody)
+            .then(() => {
+                conexion.query(insertQuery, [usuario, hashedPassword, email, token], (err, result) => {
+                    if (err) {
+                        console.error('Error al insertar en la base de datos:', err);  // Agregar este mensaje
+                        return reject(err);
+                    }
+                    console.log('Usuario registrado exitosamente:', result);  // Agregar este mensaje
+                    resolve(result);
+                });
+            })
+            .catch(err => {
+                console.error('Error al enviar el correo:', err);  // Agregar este mensaje
+                reject(err);
+            });
+    });
+}
+
+function confirmUserRegistration(token) {
+    return new Promise((resolve, reject) => {
+        // Verificar si el token existe en la tabla `registro_pendiente`
+        const selectQuery = 'SELECT * FROM registro_pendiente WHERE token = ?';
+        conexion.query(selectQuery, [token], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            if (results.length === 0) {
+                return reject('Token de confirmación inválido o expirado');
+            }
+
+            // Extraer los datos del usuario
+            const { username, password_hash, email } = results[0];
+
+            // Insertar el usuario en la tabla de usuarios confirmados
+            const insertQuery = 'INSERT INTO usuarios (username, password_hash, email) VALUES (?, ?, ?)';
+            conexion.query(insertQuery, [username, password_hash, email], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
 
-                // Comparar el hash generado con el hash almacenado
-                if (hashToCompare === hashedPassword) {
-                    resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
-                } else {
-                    reject('Contraseña incorrecta');  // Contraseña incorrecta
-                }
+                // Eliminar el registro de la tabla `registro_pendiente`
+                const deleteQuery = 'DELETE FROM registro_pendiente WHERE token = ?';
+                conexion.query(deleteQuery, [token], (err, result) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    resolve(result);
+                });
             });
         });
     });
 }
+
 
 
 function posts(tabla, pagina = 1, limite = 10) {
@@ -320,8 +402,10 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 
 module.exports = {
     Login,
+    registerUser,
     posts,
     anuncios,
+    confirmUserRegistration,
     unAnuncio,
     unpost,
     likePost,

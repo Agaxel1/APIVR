@@ -10,18 +10,33 @@ module.exports = function (dbInyectada) {
     async function Login(usuario, password) {
         try {
             const user = await db.Login(TABLA, usuario, password);
-            return user;  // Devuelves la información del usuario si es necesario
+            return user;
         } catch (error) {
-            throw error;  // Maneja el error según sea necesario
+            throw error;
         }
     }
 
-    function Register(tipo = "TI", tipo2 = "TL") {
-        return db.Trabajos(TABLA, tipo, tipo2);
+    async function registerUser(username, email, password, token) {
+        try {
+            await db.registerUser(username, password, email, token);
+            return;  // Puedes devolver algo si es necesario
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async function confirmRegistration(token) {
+        try {
+            const result = await db.confirmUserRegistration(token);
+            return result;
+        } catch (error) {
+            throw error;
+        }
     }
 
     return {
         Login,
-        Register
+        registerUser,
+        confirmRegistration
     };
 };

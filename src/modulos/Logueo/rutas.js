@@ -1,29 +1,51 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
+const crypto = require('crypto');
 
 const router = express.Router();
 
-router.post('/login', login);  // Ya lo tienes en POST
-router.get('/register', getRegister);
+router.post('/login', login);
+router.post('/register', register); // Cambiado de GET a POST para manejar el registro
+router.get('/confirm/:token', confirm);
 
 async function login(req, res) {
-    const { usuario, password } = req.body;  // Extraes usuario y password del cuerpo de la petición
-
+    const { usuario, password } = req.body;
     try {
-        const user = await controlador.Login(usuario, password);  // Llamas a la función Login del controlador
-        respuestas.success(req, res, user, 200);  // Devuelves una respuesta exitosa
+        const user = await controlador.Login(usuario, password);
+        respuestas.success(req, res, user, 200);
     } catch (err) {
-        respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);  // Devuelves un error si la autenticación falla
+        respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
 
-async function getRegister(req, res) {
+async function register(req, res) {
+    const { username, email, password, passwordConfirm } = req.body;
+
+    if (password !== passwordConfirm) {
+        return respuestas.error(req, res, 'Las contraseñas no coinciden', 400);
+    }
+
     try {
-        const response = await controlador.Register();  // Suponiendo que quieres devolver algún dato para el registro
-        respuestas.success(req, res, response, 200);
+        const token = crypto.randomBytes(32).toString('hex');
+        await controlador.registerUser(username, email, password, token);
+        respuestas.success(req, res, 'Registro exitoso. Por favor, revisa tu correo para confirmar tu registro.', 200);
     } catch (err) {
-        respuestas.error(req, res, err, 500);
+        respuestas.error(req, res, err.message || 'Error al registrar el usuario', 500);
+    }
+}
+
+async function confirm(req, res) {
+    const { token } = req.params;
+    try {
+        const user = await controlador.confirmRegistration(token);
+        if (user) {
+            respuestas.success(req, res, 'Registro confirmado exitosamente', 200);
+        } else {
+            respuestas.error(req, res, 'Token de confirmación inválido o expirado', 400);
+        }
+    } catch (err) {
+        respuestas.error(req, res, err.message || 'Error al confirmar el registro', 500);
     }
 }
 
