@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const config = require('../config');
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 const dbconfig = {
     host: config.mysql.host,
@@ -35,17 +35,12 @@ function conmysql() {
 
 conmysql();
 
-//**Logueo */
-function hashPassword(password, salt) {
-    return crypto.createHash('sha256').update(password + salt).digest('hex');
-}
-
 
 function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT * FROM ${tabla} WHERE Name = ?`;
+        const query = `SELECT Pass, Salt FROM ${tabla} WHERE Name = ?`;
 
-        connection.query(query, [usuario], (error, results) => {
+        connection.query(query, [usuario], async (error, results) => {
             if (error) {
                 return reject(error);
             }
@@ -54,13 +49,17 @@ function Login(tabla, usuario, password) {
                 return reject('Usuario no encontrado');
             }
 
-            const user = results[0];
+            const { Pass: hashedPassword, Salt: storedSalt } = results[0];
 
-            // Aquí compararías las contraseñas, en este ejemplo se asume que las contraseñas no están hasheadas.
-            if (user.password === password) {
-                resolve(user);  // Puedes devolver más información si lo necesitas
+            // Combinar el salt almacenado con la contraseña ingresada para comparar con el hash
+            const hashToCompare = await bcrypt.hash(password, storedSalt);
+            console.log("HashToCompare: " + hashedPassword);
+            console.log("Pass: " + hashToCompare);
+            
+            if (hashToCompare === hashedPassword) {
+                resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
             } else {
-                reject('Contraseña incorrecta');
+                reject('Contraseña incorrecta');  // Contraseña incorrecta
             }
         });
     });
