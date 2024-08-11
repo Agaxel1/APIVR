@@ -43,32 +43,24 @@ function hashPassword(password, salt) {
 
 function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT * FROM ?? WHERE Name = ?`;
+        const query = `SELECT * FROM ${tabla} WHERE Name = ?`;
 
-        // Ejecutar la consulta para obtener el usuario
-        conexion.query(query, [tabla, usuario], (err, rows) => {
-            if (err) {
-                return reject(err);
+        connection.query(query, [usuario], (error, results) => {
+            if (error) {
+                return reject(error);
             }
 
-            if (rows.length === 0) {
-                console.log(conexion.sql(query, [tabla, usuario]));
-                return resolve({ success: false, message: 'Usuario no encontrado' });
+            if (results.length === 0) {
+                return reject('Usuario no encontrado');
             }
 
-            const user = rows[0];
-            const storedSalt = user.Salt;
-            const storedHash = user.Pass;
+            const user = results[0];
 
-            // Crear el hash de la contraseña ingresada usando el salt almacenado
-            const hashedPassword = hashPassword(password, storedSalt);
-
-            if (hashedPassword === storedHash) {
-                // Contraseña correcta
-                resolve({ success: true, message: 'Inicio de sesión exitoso', user: user });
+            // Aquí compararías las contraseñas, en este ejemplo se asume que las contraseñas no están hasheadas.
+            if (user.password === password) {
+                resolve(user);  // Puedes devolver más información si lo necesitas
             } else {
-                // Contraseña incorrecta
-                resolve({ success: false, message: 'Contraseña incorrecta' });
+                reject('Contraseña incorrecta');
             }
         });
     });

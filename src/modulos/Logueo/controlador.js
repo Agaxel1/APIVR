@@ -7,9 +7,15 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
-    function Login(usuario, password) {
-        return db.Login(TABLA, usuario, password);
+    async function Login(usuario, password) {
+        try {
+            const user = await db.Login(TABLA, usuario, password);
+            return user;  // Devuelves la información del usuario si es necesario
+        } catch (error) {
+            throw error;  // Maneja el error según sea necesario
+        }
     }
+
     function Register(tipo = "TI", tipo2 = "TL") {
         return db.Trabajos(TABLA, tipo, tipo2);
     }
