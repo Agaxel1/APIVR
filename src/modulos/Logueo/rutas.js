@@ -17,25 +17,26 @@ async function login(req, res) {
     const { usuario, password } = req.body;
 
     try {
-        // Intenta autenticar al usuario
         const user = await controlador.Login(req, usuario, password);
 
         if (!user) {
-            // Si `user` es nulo o indefinido, significa que el usuario no se autenticó correctamente
             return respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
         }
 
-        // Generar el token JWT
-        const token = jwt.sign({ userID: user.ID, username: user.Name }, config.jwt.secret, { expiresIn: '1d' });
+        // Determina el tiempo de expiración según la opción "Recordar este dispositivo"
+        const rememberMe = req.body.remember || false;
+        const tokenExpiry = rememberMe ? '7d' : '15m'; // Cambia '15m' a '15d' para 15 días
+
+        const token = jwt.sign({ userID: user.ID, username: user.Name }, config.jwt.secret, { expiresIn: tokenExpiry });
         console.log('Generated token:', token);
 
-        // Responder con el token
         respuestas.success(req, res, { message: 'Login exitoso', token }, 200);
     } catch (err) {
         console.error('Login error:', err);
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
+
 
 
 async function checkAuth(req, res) {
@@ -62,16 +63,6 @@ async function checkAuth(req, res) {
     } catch (err) {
         console.error('Token verification error:', err);
         respuestas.success(req, res, { authenticated: false }, 200);
-    }
-}
-
-
-async function logout(req, res) {
-    try {
-        // Con JWT no necesitamos una acción de logout en el servidor
-        respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
-    } catch (err) {
-        respuestas.error(req, res, 'Error al cerrar sesión', 500);
     }
 }
 
