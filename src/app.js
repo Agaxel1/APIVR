@@ -16,7 +16,8 @@ app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 const corsOptions = {
-    origin: function (origin, callback) {
+    origin: '*',
+    /*origin: function (origin, callback) {
         const allowedOrigins = [
             'http://127.0.0.1:5500',
             'https://api.vida-roleplay.com'
@@ -26,7 +27,7 @@ const corsOptions = {
         } else {
             callback(new Error('No se puede'));
         }
-    }
+    }*/
 };
 
 app.use(cors(corsOptions));
@@ -36,10 +37,18 @@ app.set('port', config.app.port);
 // Middleware para verificar el token en rutas protegidas
 function authenticateToken(req, res, next) {
     const token = req.headers['authorization'];
-    if (!token) return res.sendStatus(403);
+    console.log('Token recibido:', token);  // Verifica el token recibido
+
+    if (!token) {
+        console.log('No se recibió token.');
+        return res.sendStatus(403);
+    }
 
     jwt.verify(token, 'tu_secreto', (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) {
+            console.log('Error verificando token:', err);
+            return res.sendStatus(403);
+        }
         req.user = user;
         next();
     });

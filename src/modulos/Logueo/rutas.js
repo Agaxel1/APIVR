@@ -34,6 +34,7 @@ async function checkAuth(req, res) {
 
     try {
         const decoded = jwt.verify(token, 'tu_secreto');
+        console.log('Token decodificado:', decoded);
         // Puedes hacer algo más con el decoded, como verificar el usuario en la base de datos
         respuestas.success(req, res, 'Autenticado', 200);
     } catch (err) {
