@@ -17,7 +17,14 @@ module.exports = function (dbInyectada) {
     }
 
     function Logout(req) {
-        
+        return new Promise((resolve, reject) => {
+            req.session.destroy(err => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
     }
 
     async function registerUser(username, email, password, token) {

@@ -1,11 +1,10 @@
-const jwt = require('jsonwebtoken');
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
 const crypto = require('crypto');
-const config = require('../../config');
 
 const router = express.Router();
+
 
 router.post('/login', login);
 router.post('/logout', logout);
@@ -18,29 +17,35 @@ async function login(req, res) {
 
     try {
         const user = await controlador.Login(req, usuario, password);
-        const token = jwt.sign({ id: user.ID }, config.jwt.secret, { expiresIn: '1h' });
-        respuestas.success(req, res, { success: true, token }, 200);
+        respuestas.success(req, res, user, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
 
 async function checkAuth(req, res) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return respuestas.error(req, res, 'No autenticado', 401);
-    }
-
     try {
-        const decoded = jwt.verify(token, config.jwt.secret);
-        respuestas.success(req, res, { authenticated: true, userId: decoded.id }, 200);
+        if (req.session && req.session.userID) {
+            respuestas.success(req, res, { authenticated: true }, 200);
+        } else {
+            respuestas.success(req, res, { authenticated: false }, 200);
+        }
     } catch (err) {
-        respuestas.error(req, res, 'Token inválido o expirado', 401);
+        respuestas.error(req, res, 'Error al verificar autenticación', 500);
     }
 }
 
 async function logout(req, res) {
-    respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
+    try {
+        req.session.destroy(err => {
+            if (err) {
+                return respuestas.error(req, res, 'Error al cerrar sesión', 500);
+            }
+            respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
+        });
+    } catch (err) {
+        respuestas.error(req, res, 'Error al cerrar sesión', 500);
+    }
 }
 
 async function register(req, res) {
