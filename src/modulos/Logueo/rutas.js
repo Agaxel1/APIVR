@@ -1,11 +1,11 @@
+const jwt = require('jsonwebtoken');
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const config = require('../../config');
 
 const router = express.Router();
-
 
 router.post('/login', login);
 router.post('/logout', logout);
@@ -18,37 +18,29 @@ async function login(req, res) {
 
     try {
         const user = await controlador.Login(req, usuario, password);
-        const token = jwt.sign({ id: user.ID }, 'tu_secreto', { expiresIn: '10m' }); // Genera un token con 10 minutos de validez
-        respuestas.success(req, res, { token }, 200);
+        const token = jwt.sign({ id: user.ID }, config.jwt.secret, { expiresIn: '1h' });
+        respuestas.success(req, res, { success: true, token }, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
 }
 
 async function checkAuth(req, res) {
-    const token = req.headers.authorization.split(' ')[1];
-
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return respuestas.error(req, res, 'No autenticado', 401);
     }
 
     try {
-        const decoded = jwt.verify(token, 'tu_secreto');
-        console.log('Token decodificado:', decoded);
-        // Puedes hacer algo más con el decoded, como verificar el usuario en la base de datos
-        respuestas.success(req, res, 'Autenticado', 200);
+        const decoded = jwt.verify(token, config.jwt.secret);
+        respuestas.success(req, res, { authenticated: true, userId: decoded.id }, 200);
     } catch (err) {
         respuestas.error(req, res, 'Token inválido o expirado', 401);
     }
 }
 
 async function logout(req, res) {
-    try {
-        await controlador.Logout(req);
-        respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
-    } catch (err) {
-        respuestas.error(req, res, 'Error al cerrar sesión', 500);
-    }
+    respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
 }
 
 async function register(req, res) {

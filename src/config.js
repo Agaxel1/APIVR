@@ -10,6 +10,9 @@ module.exports = {
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DB,
     },
+    jwt: {
+        secret: '1yHj$7r@kI3Np2!xVz&uL8wM#QpFgR9Z'
+    },
     email: {
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
