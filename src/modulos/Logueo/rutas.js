@@ -17,7 +17,12 @@ async function login(req, res) {
 
     try {
         const user = await controlador.Login(req, usuario, password);
-        respuestas.success(req, res, user, 200);
+
+        // Establecer datos de sesión
+        req.session.userID = user.ID; // Puedes almacenar más datos si es necesario
+        req.session.username = user.Name;
+
+        respuestas.success(req, res, { message: 'Login exitoso' }, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
     }
