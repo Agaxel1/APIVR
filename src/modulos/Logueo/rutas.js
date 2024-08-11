@@ -17,11 +17,19 @@ async function login(req, res) {
     const { usuario, password } = req.body;
 
     try {
+        // Intenta autenticar al usuario
         const user = await controlador.Login(req, usuario, password);
+
+        if (!user) {
+            // Si `user` es nulo o indefinido, significa que el usuario no se autenticó correctamente
+            return respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
+        }
+
         // Generar el token JWT
         const token = jwt.sign({ userID: user.ID, username: user.Name }, config.jwt.secret, { expiresIn: '1d' });
         console.log('Generated token:', token);
 
+        // Responder con el token
         respuestas.success(req, res, { message: 'Login exitoso', token }, 200);
     } catch (err) {
         console.error('Login error:', err);
@@ -29,15 +37,19 @@ async function login(req, res) {
     }
 }
 
+
 async function checkAuth(req, res) {
     const authHeader = req.headers.authorization;
+    console.log("Auth header:", authHeader);
+
     if (!authHeader) {
-        console.log('No auth header');
+        console.log('No auth header provided');
         return respuestas.success(req, res, { authenticated: false }, 200);
     }
 
     const token = authHeader.split(' ')[1];
     console.log('Received token:', token);
+
     if (!token) {
         console.log('Token is undefined');
         return respuestas.success(req, res, { authenticated: false }, 200);
@@ -52,6 +64,7 @@ async function checkAuth(req, res) {
         respuestas.success(req, res, { authenticated: false }, 200);
     }
 }
+
 
 async function logout(req, res) {
     try {
