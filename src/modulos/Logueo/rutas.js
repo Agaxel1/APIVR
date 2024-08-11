@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const router = express.Router();
 
 router.post('/login', login);
+router.post('/logout', logout);
 router.post('/register', register); // Cambiado de GET a POST para manejar el registro
 router.get('/confirm/:token', confirm);
 
@@ -16,6 +17,15 @@ async function login(req, res) {
         respuestas.success(req, res, user, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
+    }
+}
+
+async function logout(req, res) {
+    try {
+        await controlador.Logout(req);
+        respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
+    } catch (err) {
+        respuestas.error(req, res, 'Error al cerrar sesión', 500);
     }
 }
 

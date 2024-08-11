@@ -7,13 +7,32 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
-    async function Login(usuario, password) {
+    async function Login(req, usuario, password) {
         try {
             const user = await db.Login(TABLA, usuario, password);
+
+            // Guardar el usuario en la sesión
+            req.session.user = {
+                id: user.id,
+                username: user.username
+            };
+
             return user;
         } catch (error) {
             throw error;
         }
+    }
+
+    function Logout(req) {
+        return new Promise((resolve, reject) => {
+            req.session.destroy(err => {
+                if (err) {
+                    reject('Error al cerrar sesión');
+                } else {
+                    resolve('Sesión cerrada exitosamente');
+                }
+            });
+        });
     }
 
     async function registerUser(username, email, password, token) {
@@ -36,6 +55,7 @@ module.exports = function (dbInyectada) {
 
     return {
         Login,
+        Logout,
         registerUser,
         confirmRegistration
     };
