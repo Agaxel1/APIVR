@@ -40,7 +40,7 @@ function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
         const query = `SELECT Pass, Salt FROM ${tabla} WHERE Name = ?`;
 
-        connection.query(query, [usuario], async (error, results) => {
+        conexion.query(query, [usuario], async (error, results) => {
             if (error) {
                 return reject(error);
             }
@@ -51,16 +51,19 @@ function Login(tabla, usuario, password) {
 
             const { Pass: hashedPassword, Salt: storedSalt } = results[0];
 
-            // Combinar el salt almacenado con la contraseña ingresada para comparar con el hash
-            const hashToCompare = await bcrypt.hash(password, storedSalt);
-            console.log("HashToCompare: " + hashedPassword);
-            console.log("Pass: " + hashToCompare);
-            
-            if (hashToCompare === hashedPassword) {
-                resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
-            } else {
-                reject('Contraseña incorrecta');  // Contraseña incorrecta
-            }
+            // Comparar la contraseña ingresada con el hash almacenado
+            bcrypt.hash(password, storedSalt, (err, hashToCompare) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                // Comparar el hash generado con el hash almacenado
+                if (hashToCompare === hashedPassword) {
+                    resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
+                } else {
+                    reject('Contraseña incorrecta');  // Contraseña incorrecta
+                }
+            });
         });
     });
 }
