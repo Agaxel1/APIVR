@@ -56,7 +56,7 @@ async function sendMail(recipientEmail, body) {
 
 function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT ID, Pass, Salt FROM ${tabla} WHERE Name = ?`;
+        const query = `SELECT ID,Name,  Pass, Salt FROM ${tabla} WHERE Name = ?`;
 
         conexion.query(query, [usuario], (error, results) => {
             if (error) {
