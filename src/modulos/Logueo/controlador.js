@@ -11,10 +11,9 @@ module.exports = function (dbInyectada) {
         try {
             const user = await db.Login(TABLA, usuario, password);
 
-            // Guardar el usuario en la sesión
             req.session.user = {
-                id: user.id,
-                username: user.username
+                id: user.ID,
+                username: user.Name
             };
 
             return user;

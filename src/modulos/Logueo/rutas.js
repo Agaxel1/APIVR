@@ -7,14 +7,16 @@ const router = express.Router();
 
 router.post('/login', login);
 router.post('/logout', logout);
-router.post('/register', register); // Cambiado de GET a POST para manejar el registro
+router.post('/register', register);
 router.get('/confirm/:token', confirm);
 router.get('/checkAuth', checkAuth);
 
 async function login(req, res) {
     const { usuario, password } = req.body;
+
     try {
-        const user = await controlador.Login(usuario, password);
+        const user = await controlador.Login(req, usuario, password);
+        res.cookie('session_id', req.sessionID, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie para la sesión, válida por 24 horas
         respuestas.success(req, res, user, 200);
     } catch (err) {
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
@@ -22,7 +24,7 @@ async function login(req, res) {
 }
 
 async function checkAuth(req, res) {
-    if (req.session.user) {  // Verifica si el usuario está en la sesión
+    if (req.session.user) {
         res.json({ authenticated: true, user: req.session.user });
     } else {
         res.json({ authenticated: false });
@@ -31,6 +33,7 @@ async function checkAuth(req, res) {
 
 async function logout(req, res) {
     try {
+        res.clearCookie('session_id'); // Elimina la cookie de sesión
         await controlador.Logout(req);
         respuestas.success(req, res, 'Sesión cerrada exitosamente', 200);
     } catch (err) {
@@ -42,7 +45,6 @@ async function register(req, res) {
     const { username, email, password, passwordConfirm } = req.body;
 
     if (password !== passwordConfirm) {
-        console.log('Las contraseñas no coinciden');
         return respuestas.error(req, res, 'Las contraseñas no coinciden', 400);
     }
 
@@ -51,7 +53,6 @@ async function register(req, res) {
         await controlador.registerUser(username, email, password, token);
         respuestas.success(req, res, 'Registro exitoso. Por favor, revisa tu correo para confirmar tu registro.', 200);
     } catch (err) {
-        console.error('Error en el registro:', err);
         respuestas.error(req, res, err.message || 'Error al registrar el usuario', 500);
     }
 }
