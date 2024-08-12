@@ -53,7 +53,7 @@ function getEstadisticas(userID, tabla) {
 
 function getModelos(model) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT * FROM car_model_table WHERE Model = ?`;
+        const query = `SELECT * FROM car_table WHERE Model = ?`;
         conexion.query(query, [model], (err, results) => {
             if (err) {
                 return reject(err);
