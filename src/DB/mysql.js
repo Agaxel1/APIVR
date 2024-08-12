@@ -39,17 +39,43 @@ conmysql();
 //Perfil
 // Funciones de consulta para cada sección
 // Funciones de consulta para cada sección
-function getEstadisticas(userID, tabla) {
+function getFaccion(memberID) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT * FROM ${tabla} WHERE ID = ?`;
-        conexion.query(query, [userID], (err, results) => {
+        const query = `SELECT Name FROM LeaderInfo WHERE Leader = ?`;
+        conexion.query(query, [memberID], (err, results) => {
             if (err) {
                 return reject(err);
             }
-            resolve(results);
+            resolve(results[0]?.Name || 'No asignado');
         });
     });
 }
+
+function getEstadisticas(userID, tabla) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE ID = ?`;
+        conexion.query(query, [userID], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            if (results.length > 0) {
+                const estadisticas = results[0];
+
+                // Reemplazar el número de `Member` por el nombre correspondiente
+                try {
+                    estadisticas.Member = await getFaccion(estadisticas.Member);
+                    resolve(estadisticas);
+                } catch (error) {
+                    reject(error);
+                }
+            } else {
+                resolve(null); // No se encontraron estadísticas
+            }
+        });
+    });
+}
+
 
 function getModelos(model) {
     return new Promise((resolve, reject) => {
