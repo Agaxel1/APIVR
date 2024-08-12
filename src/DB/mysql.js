@@ -86,8 +86,8 @@ function getAutos(userID, tabla) {
 
                 // Devuelve los resultados combinados
                 resolve({
-                    models: results,
-                    cars: cars
+                    autos: results,
+                    modelos: cars
                 });
             } catch (error) {
                 reject(error);
@@ -95,6 +95,7 @@ function getAutos(userID, tabla) {
         });
     });
 }
+
 
 
 
