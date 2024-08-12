@@ -11,6 +11,21 @@ router.get('/negocios', getNegocios);
 router.get('/casas', getCasas);
 router.get('/movimientos', getMovimientos);
 router.get('/tops', getTops);
+router.get('/certification-status', getCertificationStatus);
+
+
+// Nueva función para obtener el estado de certificación
+async function getCertificationStatus(req, res) {
+    const userID = req.query.userID;
+    try {
+        const status = await controlador.getCertificationStatus(userID);
+        respuestas.success(req, res, status, 200);
+    } catch (error) {
+        console.error('Error al obtener el estado de certificación:', error);
+        respuestas.error(req, res, 'Error al obtener el estado de certificación', 500);
+    }
+}
+
 
 // Nueva función para obtener los TOPS
 async function getTops(req, res) {

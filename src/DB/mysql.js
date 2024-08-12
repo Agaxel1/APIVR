@@ -37,6 +37,31 @@ function conmysql() {
 conmysql();
 
 
+async function getCertificationStatus(userID) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT CertUsuario, CertFacc FROM PlayaRP WHERE ID = ?`;
+        conexion.query(query, [userID], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            if (results.length > 0) {
+                const { CertUsuario, CertFacc } = results[0];
+                resolve({
+                    userCertified: CertUsuario === 1,
+                    factionCertified: CertFacc === 1
+                });
+            } else {
+                resolve({
+                    userCertified: false,
+                    factionCertified: false
+                });
+            }
+        });
+    });
+}
+
+
 function getTops(columna) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM PlayaRP ORDER BY ${columna} DESC LIMIT 10`;
@@ -668,5 +693,6 @@ module.exports = {
     getAutos,
     getNegocios,
     getCasas,
-    getMovimientos
+    getMovimientos,
+    getCertificationStatus
 };

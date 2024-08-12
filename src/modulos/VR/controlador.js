@@ -96,12 +96,22 @@ module.exports = function (dbInyectada) {
         }
     }
 
+    async function getCertificationStatus(userID) {
+        try {
+            const certificationStatus = await db.getCertificationStatus(userID);
+            return certificationStatus;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
         getTops,
         getEstadisticas,
         getAutos,
         getNegocios,
         getCasas,
-        getMovimientos
+        getMovimientos,
+        getCertificationStatus
     };
 };
