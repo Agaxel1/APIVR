@@ -265,11 +265,6 @@ function Login(tabla, usuario, password) {
     });
 }
 
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
 async function registerUser(usuario, password, email) {
     return new Promise((resolve, reject) => {
         // Verificar el formato del correo electrónico
@@ -277,64 +272,93 @@ async function registerUser(usuario, password, email) {
             return reject(new Error('El correo electrónico ingresado no es válido.'));
         }
 
-        const token = crypto.randomBytes(32).toString('hex');
-        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex').toLowerCase();
-
-        // Verificar si el correo ya está en registro_pendiente
-        const checkEmailQuery = 'SELECT COUNT(*) AS count FROM registro_pendiente WHERE email = ?';
-        conexion.query(checkEmailQuery, [email], (err, results) => {
+        // Verificar si el correo ya está en PlayaRP
+        const checkEmailInPlayaRPQuery = 'SELECT COUNT(*) AS count FROM PlayaRP WHERE Mail = ?';
+        conexion.query(checkEmailInPlayaRPQuery, [email], (err, results) => {
             if (err) {
-                console.error('Error al verificar el correo electrónico:', err);
-                return reject(new Error('Error al verificar el correo electrónico'));
+                console.error('Error al verificar el correo electrónico en PlayaRP:', err);
+                return reject(new Error('Error al verificar el correo electrónico en PlayaRP.'));
             }
 
             if (results[0].count > 0) {
-                return reject(new Error('El correo electrónico ya está registrado.'));
+                return reject(new Error('El correo electrónico ya está registrado en PlayaRP.'));
             }
 
-            const insertQuery = 'INSERT INTO registro_pendiente (username, password_hash, email, token) VALUES (?, ?, ?, ?)';
-            const confirmationLink = `https://api.vida-roleplay.com/api/logueo/confirm/${token}`;
-            const emailBody = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Confirmación de Registro</title>
-                </head>
-                <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
-                    <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
-                        <img src="https://i.postimg.cc/Px5Q8nPk/Imagen-de-Whats-App-2024-07-29-a-las-19-07-48-3caaf1fa.jpg" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
-                        <h1 style="color: #ffffff;">¡Hola ${usuario}!</h1>
-                        <p style="color: #c0c0c0; line-height: 1.5;">Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
-                        <a href="${confirmationLink}" style="display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 14px 28px; font-size: 20px; font-weight: bold; background-color: #0069d9; color: #ffffff; text-decoration: none; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease-in-out;">Confirmar Registro</a>
-                        <p style="color: #c0c0c0;">Si no solicitaste este registro, por favor ignora este correo.</p>
-                        <div style="font-size: 12px; color: #888888; margin-top: 20px;">
-                            <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
-                            <p><img src="https://i.postimg.cc/XJ1cf1CB/email.png" alt="Email Icon" style="width: 24px; vertical-align: middle; margin-right: 8px;"> Si tienes problemas, contacta con soporte.</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
+            // Generar un salt aleatorio de 10 caracteres
+            const salt = crypto.randomBytes(10).toString('hex');
 
-            sendMail(email, emailBody)
-                .then(() => {
-                    conexion.query(insertQuery, [usuario, hashedPassword, email, token], (err, result) => {
-                        if (err) {
-                            console.error('Error al insertar en la base de datos:', err);
-                            return reject(err);
-                        }
-                        console.log('Usuario registrado exitosamente:', result);
-                        resolve(result);
+            // Crear el hash de la contraseña usando el salt y convertirlo a mayúsculas
+            const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex').toUpperCase();
+
+            const token = crypto.randomBytes(32).toString('hex');
+
+            // Verificar si el correo ya está en registro_pendiente
+            const checkEmailQuery = 'SELECT COUNT(*) AS count FROM registro_pendiente WHERE email = ?';
+            conexion.query(checkEmailQuery, [email], (err, results) => {
+                if (err) {
+                    console.error('Error al verificar el correo electrónico en registro_pendiente:', err);
+                    return reject(new Error('Error al verificar el correo electrónico en registro_pendiente.'));
+                }
+
+                if (results[0].count > 0) {
+                    return reject(new Error('El correo electrónico ya está registrado.'));
+                }
+
+                // Guardar el usuario con el salt y el hash en la base de datos
+                const insertQuery = 'INSERT INTO registro_pendiente (username, password_hash, salt, email, token) VALUES (?, ?, ?, ?, ?)';
+                const confirmationLink = `https://api.vida-roleplay.com/api/logueo/confirm/${token}`;
+                const emailBody = `
+                    <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Confirmación de Registro</title>
+                    </head>
+                    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
+                        <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
+                            <img src="https://i.postimg.cc/Px5Q8nPk/Imagen-de-Whats-App-2024-07-29-a-las-19-07-48-3caaf1fa.jpg" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
+                            <h1 style="color: #ffffff;">¡Hola ${usuario}!</h1>
+                            <p style="color: #c0c0c0; line-height: 1.5;">Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
+                            <a href="${confirmationLink}" style="display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 14px 28px; font-size: 20px; font-weight: bold; background-color: #0069d9; color: #ffffff; text-decoration: none; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease-in-out;">Confirmar Registro</a>
+                            <p style="color: #c0c0c0;">Si no solicitaste este registro, por favor ignora este correo.</p>
+                            <div style="font-size: 12px; color: #888888; margin-top: 20px;">
+                                <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
+                                <p><img src="https://i.postimg.cc/XJ1cf1CB/email.png" alt="Email Icon" style="width: 24px; vertical-align: middle; margin-right: 8px;"> Si tienes problemas, contacta con soporte.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                sendMail(email, emailBody)
+                    .then(() => {
+                        conexion.query(insertQuery, [usuario, hashedPassword, salt, email, token], (err, result) => {
+                            if (err) {
+                                console.error('Error al insertar en la base de datos:', err);
+                                return reject(err);
+                            }
+                            console.log('Usuario registrado exitosamente:', result);
+                            resolve(result);
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Error al enviar el correo:', err);
+                        reject(new Error('Error al enviar el correo electrónico. Verifica el correo ingresado.'));
                     });
-                })
-                .catch(err => {
-                    console.error('Error al enviar el correo:', err);
-                    reject(new Error('Error al enviar el correo electrónico. Verifica el correo ingresado.'));
-                });
+            });
         });
     });
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
 
 function confirmUserRegistration(token) {
