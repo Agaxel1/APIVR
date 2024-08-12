@@ -85,10 +85,11 @@ async function confirm(req, res) {
     const token = req.params.token;
     try {
         await controlador.confirmRegistration(token);
-        respuestas.success(req, res, 'Registro confirmado exitosamente', 200);
+        res.redirect('http://127.0.0.1:5500/confirmacionExitosa.html');  // Redirige a un sitio web externo
     } catch (err) {
         respuestas.error(req, res, err.message || 'Error al confirmar registro', 500);
     }
 }
+
 
 module.exports = router;
