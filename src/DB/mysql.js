@@ -39,18 +39,15 @@ conmysql();
 
 function getTops(columna) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT * FROM PlayaRP ORDER BY ${columna} DESC LIMIT 10`; // Asumiendo que quieres los 10 mejores
+        const query = `SELECT * FROM PlayaRP ORDER BY ${columna} DESC LIMIT 10`;
         conexion.query(query, [], (err, results) => {
             if (err) {
                 return reject(err);
             }
 
             if (results.length > 0) {
-                // Extrae los encabezados de la primera fila
                 const headers = Object.keys(results[0]);
-
-                // Prepara las filas de datos
-                const rows = results.map(row => Object.values(row));
+                const rows = results.map(row => headers.map(header => row[header]));
 
                 resolve({
                     headers: headers,
@@ -58,15 +55,13 @@ function getTops(columna) {
                 });
             } else {
                 resolve({
-                    headers: [], // Si no hay resultados, encabezados vacíos
+                    headers: [],
                     rows: []
                 });
             }
         });
     });
 }
-
-
 
 
 
