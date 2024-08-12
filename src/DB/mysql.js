@@ -85,7 +85,7 @@ async function registerUser(usuario, password, email) {
     return new Promise((resolve, reject) => {
         const token = crypto.randomBytes(32).toString('hex');
         const hashedPassword = crypto.createHash('sha256').update(password).digest('hex').toLowerCase();
-        
+
         // Verificar si el correo ya está en registro_pendiente
         const checkEmailQuery = 'SELECT COUNT(*) AS count FROM registro_pendiente WHERE email = ?';
         conexion.query(checkEmailQuery, [email], (err, results) => {
@@ -107,60 +107,17 @@ async function registerUser(usuario, password, email) {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Confirmación de Registro</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            margin: 0;
-                            padding: 0;
-                            background-color: #2e2e2e;
-                            color: #f0f0f0;
-                        }
-                        .container {
-                            max-width: 600px;
-                            margin: 40px auto;
-                            background: #333;
-                            padding: 20px;
-                            border-radius: 8px;
-                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-                        }
-                        h1 {
-                            color: #f0f0f0;
-                            text-align: center;
-                        }
-                        p {
-                            color: #ccc;
-                            line-height: 1.5;
-                        }
-                        .button {
-                            display: inline-block;
-                            padding: 12px 24px;
-                            font-size: 16px;
-                            color: #ffffff;
-                            background-color: #007bff;
-                            text-decoration: none;
-                            border-radius: 5px;
-                            text-align: center;
-                            margin-top: 20px;
-                            display: block;
-                            width: fit-content;
-                            margin: 20px auto;
-                        }
-                        .footer {
-                            font-size: 12px;
-                            color: #999;
-                            text-align: center;
-                            margin-top: 20px;
-                        }
-                    </style>
                 </head>
-                <body>
-                    <div class="container">
-                        <h1>¡Hola ${usuario}!</h1>
-                        <p>Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
-                        <a href="${confirmationLink}" class="button">Confirmar Registro</a>
-                        <p>Si no solicitaste este registro, por favor ignora este correo.</p>
-                        <div class="footer">
+                <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
+                    <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
+                        <img src="https://i.postimg.cc/Px5Q8nPk/Imagen-de-Whats-App-2024-07-29-a-las-19-07-48-3caaf1fa.jpg" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
+                        <h1 style="color: #ffffff;">¡Hola ${usuario}!</h1>
+                        <p style="color: #c0c0c0; line-height: 1.5;">Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
+                        <a href="${confirmationLink}" style="display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 14px 28px; font-size: 20px; font-weight: bold; background-color: #0069d9; color: #ffffff; text-decoration: none; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease-in-out;">Confirmar Registro</a>
+                        <p style="color: #c0c0c0;">Si no solicitaste este registro, por favor ignora este correo.</p>
+                        <div style="font-size: 12px; color: #888888; margin-top: 20px;">
                             <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
+                            <p><img src="https://i.postimg.cc/XJ1cf1CB/email.png" alt="Email Icon" style="width: 24px; vertical-align: middle; margin-right: 8px;"> Si tienes problemas, contacta con soporte.</p>
                         </div>
                     </div>
                 </body>
@@ -185,6 +142,8 @@ async function registerUser(usuario, password, email) {
         });
     });
 }
+
+
 
 
 

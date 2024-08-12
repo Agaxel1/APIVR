@@ -84,7 +84,7 @@ async function register(req, res) {
 async function confirm(req, res) {
     const token = req.params.token;
     try {
-        await controlador.confirmUser(token);
+        await controlador.confirmRegistration(token);
         respuestas.success(req, res, 'Registro confirmado exitosamente', 200);
     } catch (err) {
         respuestas.error(req, res, err.message || 'Error al confirmar registro', 500);
