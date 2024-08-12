@@ -23,6 +23,7 @@ async function getEstadisticas(req, res) {
     }
 }
 
+// Función para manejar la solicitud de obtener autos
 async function getAutos(req, res) {
     const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
@@ -33,6 +34,7 @@ async function getAutos(req, res) {
         respuestas.error(req, res, 'Error al obtener autos', 500);
     }
 }
+
 
 async function getNegocios(req, res) {
     const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta

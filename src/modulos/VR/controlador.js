@@ -28,12 +28,14 @@ module.exports = function (dbInyectada) {
 
     async function getAutos(userID) {
         try {
-            const autos = await db.getAutos(userID, TABLA_AUTOS);
-            return autos;
+            const { models, cars } = await db.getAutos(userID, TABLA_AUTOS);
+            return { models, cars };
         } catch (error) {
             throw error;
         }
     }
+
+
 
     async function getNegocios(userID) {
         try {

@@ -51,10 +51,10 @@ function getEstadisticas(userID, tabla) {
     });
 }
 
-function getAutos(userID, tabla) {
+function getModelos(model) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
-        conexion.query(query, [userID], (err, results) => {
+        const query = `SELECT * FROM car_model_table WHERE Model = ?`;
+        conexion.query(query, [model], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -62,6 +62,41 @@ function getAutos(userID, tabla) {
         });
     });
 }
+
+function getAutos(userID, tabla) {
+    return new Promise((resolve, reject) => {
+        // Primera consulta: obtener los modelos de la tabla
+        const query1 = `SELECT * FROM ${tabla} WHERE Owner = ?`;
+
+        conexion.query(query1, [userID], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            // Obtener los modelos de la primera consulta
+            const models = results.map(row => row.Model);
+
+            // Segunda consulta: obtener los detalles de los modelos
+            try {
+                let cars = [];
+                for (const model of models) {
+                    const modelDetails = await getModelos(model);
+                    cars = cars.concat(modelDetails);
+                }
+
+                // Devuelve los resultados combinados
+                resolve({
+                    models: results,
+                    cars: cars
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+
 
 function getNegocios(userID, tabla) {
     return new Promise((resolve, reject) => {
