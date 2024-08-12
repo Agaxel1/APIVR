@@ -19,9 +19,9 @@ module.exports = function (dbInyectada) {
     async function getTops() {
         try {
             const columnasTops = {
-                Bank: 'Usuarios con más dinero',
-                HorasJugadas: 'Usuarios con más horas jugadas',
-                DineroGastado: 'Usuarios que más dinero han gastado'
+                Bank: 'TOP dinero',
+                HorasJugadas: 'TOP horas jugadas',
+                DineroGastado: 'TOP dinero gastado'
             };
 
             let tops = [];
