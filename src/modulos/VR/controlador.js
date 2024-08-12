@@ -19,7 +19,7 @@ module.exports = function (dbInyectada) {
     async function getTops() {
         try {
             const columnasTops = {
-                MoneyVR: 'Usuarios con más dinero',
+                Bank: 'Usuarios con más dinero',
                 HorasJugadas: 'Usuarios con más horas jugadas',
                 DineroGastado: 'Usuarios que más dinero han gastado'
             };
