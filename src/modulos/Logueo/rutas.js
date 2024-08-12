@@ -31,7 +31,7 @@ async function login(req, res) {
         const token = jwt.sign({ userID: user.ID, username: user.Name }, config.jwt.secret, { expiresIn: tokenExpiry });
         console.log('Generated token:', token);
 
-        respuestas.success(req, res, { message: 'Login exitoso', token, userID: user.ID }, 200);
+        respuestas.success(req, res, { message: 'Login exitoso', token, userID: user.ID, username: user.Name }, 200);
     } catch (err) {
         console.error('Login error:', err);
         respuestas.error(req, res, 'Usuario o contraseña incorrectos', 401);
