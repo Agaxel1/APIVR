@@ -10,6 +10,19 @@ router.get('/autos', getAutos);
 router.get('/negocios', getNegocios);
 router.get('/casas', getCasas);
 router.get('/movimientos', getMovimientos);
+router.get('/tops', getTops);
+
+// Nueva función para obtener los TOPS
+async function getTops(req, res) {
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
+    try {
+        const tops = await controlador.getTops();
+        respuestas.success(req, res, tops, 200);
+    } catch (error) {
+        console.error('Error al obtener TOPS:', error);
+        respuestas.error(req, res, 'Error al obtener TOPS', 500);
+    }
+}
 
 // Controladores para las rutas
 async function getEstadisticas(req, res) {

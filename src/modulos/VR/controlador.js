@@ -16,6 +16,33 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
+    async function getTops() {
+        try {
+            // Define las columnas para cada TOP
+            const columnasTops = {
+                MoneyVR: 'Usuarios con más dinero',
+                HorasJugadas: 'Usuarios con más horas jugadas',
+                DineroGastado: 'Usuarios que más dinero han gastado'
+            };
+    
+            let tops = [];
+            for (let [columna, titulo] of Object.entries(columnasTops)) {
+                const datosTop = await db.getTops(columna);
+                tops.push({
+                    id: columna, // Usamos el nombre de la columna como ID
+                    title: titulo,
+                    headers: datosTop.headers,
+                    rows: datosTop.rows
+                });
+            }
+    
+            return tops;
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+
     // Funciones de controladores
     async function getEstadisticas(userID, Name) {
         try {
@@ -71,6 +98,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        getTops,
         getEstadisticas,
         getAutos,
         getNegocios,

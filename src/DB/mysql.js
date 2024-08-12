@@ -36,8 +36,41 @@ function conmysql() {
 
 conmysql();
 
+
+function getTops(columna) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM PlayaRP ORDER BY ${columna} DESC LIMIT 10`; // Asumiendo que quieres los 10 mejores
+        conexion.query(query, [], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            if (results.length > 0) {
+                // Extrae los encabezados de la primera fila
+                const headers = Object.keys(results[0]);
+
+                // Prepara las filas de datos
+                const rows = results.map(row => Object.values(row));
+
+                resolve({
+                    headers: headers,
+                    rows: rows
+                });
+            } else {
+                resolve({
+                    headers: [], // Si no hay resultados, encabezados vacíos
+                    rows: []
+                });
+            }
+        });
+    });
+}
+
+
+
+
+
 //Perfil
-// Funciones de consulta para cada sección
 // Funciones de consulta para cada sección
 function getFaccion(memberID) {
     return new Promise((resolve, reject) => {
@@ -598,6 +631,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    getTops,
     Login,
     registerUser,
     posts,
