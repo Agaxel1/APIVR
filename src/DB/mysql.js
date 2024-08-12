@@ -81,8 +81,19 @@ function Login(tabla, usuario, password) {
         });
     });
 }
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 async function registerUser(usuario, password, email) {
     return new Promise((resolve, reject) => {
+        // Verificar el formato del correo electrónico
+        if (!isValidEmail(email)) {
+            return reject(new Error('El correo electrónico ingresado no es válido.'));
+        }
+
         const token = crypto.randomBytes(32).toString('hex');
         const hashedPassword = crypto.createHash('sha256').update(password).digest('hex').toLowerCase();
 
@@ -142,11 +153,6 @@ async function registerUser(usuario, password, email) {
         });
     });
 }
-
-
-
-
-
 
 function confirmUserRegistration(token) {
     return new Promise((resolve, reject) => {

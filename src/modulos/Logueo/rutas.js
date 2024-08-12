@@ -12,6 +12,8 @@ router.post('/register', register);
 router.get('/confirm/:token', confirm);
 router.get('/checkAuth', checkAuth);
 
+const linkconfirm = "http://127.0.0.1:5500/confirmacionExitosa.html"
+
 async function login(req, res) {
     const { usuario, password } = req.body;
 
@@ -85,7 +87,7 @@ async function confirm(req, res) {
     const token = req.params.token;
     try {
         await controlador.confirmRegistration(token);
-        res.redirect('http://127.0.0.1:5500/confirmacionExitosa.html');  // Redirige a un sitio web externo
+        res.redirect(`${linkconfirm}`);  // Redirige a un sitio web externo
     } catch (err) {
         respuestas.error(req, res, err.message || 'Error al confirmar registro', 500);
     }
