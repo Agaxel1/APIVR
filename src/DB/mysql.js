@@ -36,6 +36,71 @@ function conmysql() {
 
 conmysql();
 
+//Perfil
+// Funciones de consulta para cada sección
+// Funciones de consulta para cada sección
+function getEstadisticas(userID, tabla) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE ID = ?`;
+        conexion.query(query, [userID], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+function getAutos(userID, tabla) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
+        conexion.query(query, [userID], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+function getNegocios(userID, tabla) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
+        conexion.query(query, [userID], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+function getCasas(userID, tabla) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
+        conexion.query(query, [userID], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+function getMovimientos(userID) {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT * FROM banco WHERE Owner = ?';
+        conexion.query(query, [userID], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+//
+
 async function sendMail(recipientEmail, body) {
     const transporter = nodemailer.createTransport(config.email);
 
@@ -456,4 +521,9 @@ module.exports = {
     deletePost,
     emisoras,
     Trabajos,
+    getEstadisticas,
+    getAutos,
+    getNegocios,
+    getCasas,
+    getMovimientos
 };

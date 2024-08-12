@@ -9,6 +9,7 @@ const posts = require('./modulos/posts/rutas');
 const anuncios = require('./modulos/anuncios/rutas');
 const datos = require('./modulos/Datos/rutas');
 const logueo = require('./modulos/Logueo/rutas');
+const VR = require('./modulos/VR/rutas');
 
 const app = express();
 
@@ -39,5 +40,6 @@ app.use('/api/posts', posts);
 app.use('/api/anuncios', anuncios);
 app.use('/api/datos', datos);
 app.use('/api/logueo', logueo);
+app.use('/api/VR', VR);
 
 module.exports = app;
