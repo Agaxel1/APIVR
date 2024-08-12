@@ -1,4 +1,7 @@
 const express = require('express');
+const respuestas = require('../../red/respuestas');
+const controlador = require('./index');
+
 const router = express.Router();
 
 // Rutas para cada sección
@@ -41,6 +44,7 @@ async function getCasas(req, res) {
         const casas = await controlador.getCasas(req.userID);
         res.status(200).json({ casas });
     } catch (error) {
+        console.error('Error al obtener casas:', error);
         res.status(500).json({ message: 'Error al obtener casas' });
     }
 }
