@@ -13,48 +13,57 @@ router.get('/movimientos', getMovimientos);
 
 // Controladores para las rutas
 async function getEstadisticas(req, res) {
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
-        const estadisticas = await controlador.getEstadisticas(req.userID); // Modifica esto según cómo obtienes los datos
-        res.status(200).json(estadisticas);
+        const estadisticas = await controlador.getEstadisticas(userID);
+        respuestas.success(req, res, estadisticas, 200);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener estadísticas' });
+        console.error('Error al obtener estadísticas:', error);
+        respuestas.error(req, res, 'Error al obtener estadísticas', 500);
     }
 }
 
 async function getAutos(req, res) {
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
-        const autos = await controlador.getAutos(req.userID);
-        res.status(200).json({ autos });
+        const autos = await controlador.getAutos(userID);
+        respuestas.success(req, res, autos, 200);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener autos' });
+        console.error('Error al obtener autos:', error);
+        respuestas.error(req, res, 'Error al obtener autos', 500);
     }
 }
 
 async function getNegocios(req, res) {
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
-        const negocios = await controlador.getNegocios(req.userID);
-        res.status(200).json({ negocios });
+        const negocios = await controlador.getNegocios(userID);
+        respuestas.success(req, res, negocios, 200);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener negocios' });
+        console.error('Error al obtener negocios:', error);
+        respuestas.error(req, res, 'Error al obtener negocios', 500);
     }
 }
 
 async function getCasas(req, res) {
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
-        const casas = await controlador.getCasas(req.userID);
-        res.status(200).json({ casas });
+        const casas = await controlador.getCasas(userID);
+        respuestas.success(req, res, casas, 200);
     } catch (error) {
         console.error('Error al obtener casas:', error);
-        res.status(500).json({ message: 'Error al obtener casas' });
+        respuestas.error(req, res, 'Error al obtener casas', 500);
     }
 }
 
 async function getMovimientos(req, res) {
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
-        const movimientos = await controlador.getMovimientos(req.userID);
-        res.status(200).json({ movimientos });
+        const movimientos = await controlador.getMovimientos(userID);
+        respuestas.success(req, res, movimientos, 200);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener movimientos' });
+        console.error('Error al obtener movimientos:', error);
+        respuestas.error(req, res, 'Error al obtener movimientos', 500);
     }
 }
 
