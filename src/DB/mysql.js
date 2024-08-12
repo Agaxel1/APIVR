@@ -89,9 +89,61 @@ async function registerUser(usuario, password, email) {
         const insertQuery = 'INSERT INTO registro_pendiente (username, password_hash, email, token) VALUES (?, ?, ?, ?)';
         const confirmationLink = `https://api.vida-roleplay.com/api/logueo/confirm/${token}`;
         const emailBody = `
-            <p>Hola ${usuario},</p>
-            <p>Por favor, confirma tu registro haciendo clic en el siguiente enlace:</p>
-            <a href="${confirmationLink}">Confirmar Registro</a>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f4f4f4;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background: #ffffff;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        color: #333;
+                    }
+                    p {
+                        color: #555;
+                    }
+                    .button {
+                        display: inline-block;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        color: #ffffff;
+                        background-color: #007bff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                    }
+                    .footer {
+                        font-size: 12px;
+                        color: #777;
+                        text-align: center;
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>¡Hola ${usuario}!</h1>
+                    <p>Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
+                    <a href="${confirmationLink}" class="button">Confirmar Registro</a>
+                    <p>Si no solicitaste este registro, por favor ignora este correo.</p>
+                    <div class="footer">
+                        <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
         `;
 
         sendMail(email, emailBody)
@@ -111,6 +163,7 @@ async function registerUser(usuario, password, email) {
             });
     });
 }
+
 
 
 function confirmUserRegistration(token) {
