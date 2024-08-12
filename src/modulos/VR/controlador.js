@@ -17,9 +17,9 @@ module.exports = function (dbInyectada) {
     }
 
     // Funciones de controladores
-    async function getEstadisticas(userID) {
+    async function getEstadisticas(userID, Name) {
         try {
-            const estadisticas = await db.getEstadisticas(userID, TABLA_ESTADISTICAS);
+            const estadisticas = await db.getEstadisticas(userID,Name, TABLA_ESTADISTICAS);
             return estadisticas;
         } catch (error) {
             throw error;

@@ -51,8 +51,34 @@ function getFaccion(memberID) {
     });
 }
 
-function getEstadisticas(userID, tabla) {
+function getAntecedentes(Name) {
     return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM Antecedentes WHERE Name = ?`;
+        conexion.query(query, [Name], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+// Función para obtener multas
+function getMultas(Name) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM Ticketsys WHERE Name = ?`;
+        conexion.query(query, [Name], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+// Función principal para obtener estadísticas
+async function getEstadisticas(userID, Name, tabla) {
+    return new Promise(async (resolve, reject) => {
         const query = `SELECT * FROM ${tabla} WHERE ID = ?`;
         conexion.query(query, [userID], async (err, results) => {
             if (err) {
@@ -62,8 +88,10 @@ function getEstadisticas(userID, tabla) {
             if (results.length > 0) {
                 const estadisticas = results[0];
 
-                // Reemplazar el número de `Member` por el nombre correspondiente
+                // Obtener antecedentes y multas
                 try {
+                    estadisticas.Antecedentes = await getAntecedentes(Name);
+                    estadisticas.Multas = await getMultas(Name);
                     estadisticas.Member = await getFaccion(estadisticas.Member);
                     resolve(estadisticas);
                 } catch (error) {

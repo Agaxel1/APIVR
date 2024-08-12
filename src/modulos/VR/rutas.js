@@ -14,8 +14,9 @@ router.get('/movimientos', getMovimientos);
 // Controladores para las rutas
 async function getEstadisticas(req, res) {
     const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
+    const Name = req.query.Name;
     try {
-        const estadisticas = await controlador.getEstadisticas(userID);
+        const estadisticas = await controlador.getEstadisticas(userID, Name);
         respuestas.success(req, res, estadisticas, 200);
     } catch (error) {
         console.error('Error al obtener estadísticas:', error);
