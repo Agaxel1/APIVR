@@ -61,6 +61,15 @@ module.exports = function (dbInyectada) {
         }
     }
 
+    async function certifyUser(userID, Tipo) {
+        try {
+            const result = await db.updateCertificationStatus(userID, Tipo);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
 
 
@@ -115,6 +124,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        certifyUser,
         getTops,
         getEstadisticas,
         getAutos,
