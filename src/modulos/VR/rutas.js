@@ -12,7 +12,18 @@ router.get('/casas', getCasas);
 router.get('/movimientos', getMovimientos);
 router.get('/tops', getTops);
 router.get('/certification-status', getCertificationStatus);
+router.get('/links', getLinks);
 
+
+async function getLinks(req, res) {
+    try {
+        const links = await controlador.getLinks();
+        respuestas.success(req, res, links, 200);
+    } catch (error) {
+        console.error('Error al obtener los enlaces:', error);
+        respuestas.error(req, res, 'Error al obtener los enlaces', 500);
+    }
+}
 
 // Nueva función para obtener el estado de certificación
 async function getCertificationStatus(req, res) {

@@ -36,6 +36,24 @@ function conmysql() {
 
 conmysql();
 
+async function getLinks() {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT nombre, link FROM links';
+        conexion.query(query, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            const links = {};
+            results.forEach(link => {
+                links[link.nombre] = link.link;
+            });
+
+            resolve(links);
+        });
+    });
+}
+
 
 async function getCertificationStatus(userID) {
     return new Promise((resolve, reject) => {
@@ -675,6 +693,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    getLinks,
     getTops,
     Login,
     registerUser,

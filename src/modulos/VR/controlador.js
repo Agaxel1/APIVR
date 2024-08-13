@@ -105,6 +105,15 @@ module.exports = function (dbInyectada) {
         }
     }
 
+    async function getLinks() {
+        try {
+            const links = await db.getLinks();
+            return links;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
         getTops,
         getEstadisticas,
@@ -112,6 +121,7 @@ module.exports = function (dbInyectada) {
         getNegocios,
         getCasas,
         getMovimientos,
-        getCertificationStatus
+        getCertificationStatus,
+        getLinks
     };
 };
