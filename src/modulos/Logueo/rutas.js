@@ -80,11 +80,9 @@ async function register(req, res) {
         await controlador.registerUser(username, email, password, token);
         respuestas.success(req, res, 'Registro exitoso. Por favor, revisa tu correo para confirmar tu registro.', 200);
     } catch (err) {
-        const statusCode = err.isValidationError ? 400 : 500;
-        respuestas.error(req, res, err.message || 'Error al registrar usuario', statusCode);
+        respuestas.error(req, res, err.message || 'Error al registrar usuario', 400);
     }
 }
-
 
 async function confirm(req, res) {
     const token = req.params.token;
