@@ -80,7 +80,7 @@ async function register(req, res) {
         await controlador.registerUser(username, email, password, token);
         respuestas.success(req, res, 'Registro exitoso. Por favor, revisa tu correo para confirmar tu registro.', 200);
     } catch (err) {
-        respuestas.error(req, res, err.message || 'Error al registrar usuario', 400);
+        respuestas.error(req, res, err.message || 'Error al registrar usuario', 200);
     }
 }
 
