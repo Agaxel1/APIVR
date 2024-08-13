@@ -20,7 +20,7 @@ router.post('/certify', certifyUser);
 async function certifyUser(req, res) {
     const { userID, Tipo } = req.body;  // Obtén el userID desde el cuerpo de la solicitud
     try {
-        const result = await controlador.certifyUserC(userID, Tipo);
+        const result = await controlador.certifyUser(userID, Tipo);
         respuestas.success(req, res, result, 200);
     } catch (error) {
         console.error('Error al actualizar el estado de certificación:', error);
