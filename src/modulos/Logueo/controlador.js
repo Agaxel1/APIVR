@@ -45,7 +45,17 @@ module.exports = function (dbInyectada) {
         }
     }
 
+    async function certifyUser(userID, Tipo) {
+        try {
+            const result = await db.updateCertificationStatus(userID, Tipo);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
+        certifyUser,
         Login,
         Logout,
         registerUser,

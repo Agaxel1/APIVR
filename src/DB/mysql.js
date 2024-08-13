@@ -36,6 +36,32 @@ function conmysql() {
 
 conmysql();
 
+
+async function updateCertificationStatus(userID, Tipo) {
+    return new Promise((resolve, reject) => {
+        let query = '';
+
+        // Determina el campo a actualizar según el valor de Tipo
+        if (Tipo === 1) {
+            query = 'UPDATE PlayaRP SET CertFacc = 1 WHERE ID = ?';
+        } else if (Tipo === 2) {
+            query = 'UPDATE PlayaRP SET CertUsuario = 1 WHERE ID = ?';
+        } else {
+            return reject(new Error('Tipo no válido'));
+        }
+
+        // Ejecuta la consulta
+        conexion.query(query, [userID], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(result);
+        });
+    });
+}
+
+
+
 async function getLinks() {
     return new Promise((resolve, reject) => {
         const query = 'SELECT nombre, link FROM links';
@@ -693,6 +719,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    updateCertificationStatus,
     getLinks,
     getTops,
     Login,
