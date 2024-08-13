@@ -45,7 +45,7 @@ module.exports = function (dbInyectada) {
         }
     }
 
-    async function certifyUser(userID, Tipo) {
+    async function certifyUserC(userID, Tipo) {
         try {
             const result = await db.updateCertificationStatus(userID, Tipo);
             return result;
@@ -55,7 +55,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
-        certifyUser,
+        certifyUserC,
         Login,
         Logout,
         registerUser,
