@@ -324,7 +324,7 @@ async function registerUser(usuario, password, email) {
             }
 
             if (results[0].count > 0) {
-                return reject(new Error('El correo electrónico ya está registrado en PlayaRP.'));
+                return reject(new Error('El correo electrónico ya se encuentra registrado.'));
             }
 
             // Generar un salt aleatorio de 10 caracteres
