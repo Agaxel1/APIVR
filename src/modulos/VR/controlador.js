@@ -16,6 +16,25 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
+
+    // Configuración del servidor SAMP
+    const serverOptions = {
+        host: '45.126.208.53', // IP del servidor SAMP
+        port: 7777 // Puerto del servidor SAMP
+    };
+
+    // Nueva función para obtener el estado del servidor usando la librería samp-query
+    async function getServerStatus() {
+        return new Promise((resolve, reject) => {
+            sampQuery(serverOptions, (error, response) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(response);
+            });
+        });
+    }
+
     async function getTops() {
         try {
             const columnasTops = {
@@ -125,6 +144,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        getServerStatus,
         certifyUser,
         getTops,
         getEstadisticas,

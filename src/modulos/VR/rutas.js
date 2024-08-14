@@ -14,7 +14,18 @@ router.get('/tops', getTops);
 router.get('/certification-status', getCertificationStatus);
 router.get('/links', getLinks);
 router.post('/certify', certifyUser);
+router.post('/server-status', statusServer);
 
+
+async function statusServer(req, res) {
+    try {
+        const status = await controlador.getServerStatus(); // Llama a la función del controlador que obtiene el estado del servidor
+        respuestas.success(req, res, status, 200);
+    } catch (error) {
+        console.error('Error al obtener el estado del servidor:', error);
+        respuestas.error(req, res, 'Error al obtener el estado del servidor', 500);
+    }
+}
 
 
 async function certifyUser(req, res) {
