@@ -1,31 +1,49 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const config = require('../config');
 
-const dbconfig = {
-    host: config.mysql.host,
-    user: config.mysql.user,
-    password: config.mysql.password,
-    database: config.mysql.database
-};
+// Configuración para la primera base de datos
+const dbconfig1 = config.mysql.db1;
 
-let conexion;
+// Configuración para la segunda base de datos
+const dbconfig2 = config.mysql.db2;
 
+// Crear conexiones a ambas bases de datos
+const conexion1 = mysql.createConnection(dbconfig1);
+const conexion2 = mysql.createConnection(dbconfig2);
+
+// Función para reconectar en caso de pérdida de conexión
 function conmysql() {
-    conexion = mysql.createConnection(dbconfig);
-
-    conexion.connect((err) => {
+    conexion1.connect((err) => {
         if (err) {
-            console.log('[db err]', err);
+            console.log('[db1 err]', err);
             setTimeout(conmysql, 200);
         } else {
-            console.log('Conectado a la base de datos');
+            console.log('Conectado a la base de datos 1');
         }
     });
 
-    conexion.on('error', err => {
-        console.log('[db err]', err);
+    conexion2.connect((err) => {
+        if (err) {
+            console.log('[db2 err]', err);
+            setTimeout(conmysql, 200);
+        } else {
+            console.log('Conectado a la base de datos 2');
+        }
+    });
+
+    conexion1.on('error', err => {
+        console.log('[db1 err]', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            conmysql();
+        } else {
+            throw err;
+        }
+    });
+
+    conexion2.on('error', err => {
+        console.log('[db2 err]', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             conmysql();
         } else {
