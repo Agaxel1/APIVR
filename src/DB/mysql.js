@@ -341,66 +341,91 @@ async function registerUser(usuario, password, email) {
             return reject(new Error('El correo electrónico ingresado no es válido.'));
         }
 
-        // Verificar si el correo ya está en PlayaRP
-        const checkEmailInPlayaRPQuery = 'SELECT COUNT(*) AS count FROM PlayaRP WHERE Mail = ?';
-        conexion.query(checkEmailInPlayaRPQuery, [email], (err, results) => {
-            if (err) {
-                console.error('Error al verificar el correo electrónico en PlayaRP:', err);
-                return reject(new Error('Error al verificar el correo electrónico en PlayaRP.'));
-            }
+        // Verificar si el correo ya está en PlayaRP y si el usuario ya existe en PlayaRP o en registro_pendiente
+        const checkQueries = [
+            'SELECT COUNT(*) AS count FROM PlayaRP WHERE Mail = ?',
+            'SELECT COUNT(*) AS count FROM PlayaRP WHERE username = ?',
+            'SELECT COUNT(*) AS count FROM registro_pendiente WHERE email = ?',
+            'SELECT COUNT(*) AS count FROM registro_pendiente WHERE username = ?'
+        ];
 
-            if (results[0].count > 0) {
-                return reject(new Error('El correo electrónico ya se encuentra registrado.'));
-            }
-
-            let salt = '';
-            for (let i = 0; i < 10; i++) {
-                salt += String.fromCharCode(Math.floor(Math.random() * 79) + 47);
-            }
-
-            // Crear el hash de la contraseña usando el salt y convertirlo a mayúsculas
-            const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex').toUpperCase();
-
-            const token = crypto.randomBytes(32).toString('hex');
-
-            // Verificar si el correo ya está en registro_pendiente
-            const checkEmailQuery = 'SELECT COUNT(*) AS count FROM registro_pendiente WHERE email = ?';
-            conexion.query(checkEmailQuery, [email], (err, results) => {
-                if (err) {
-                    console.error('Error al verificar el correo electrónico en registro_pendiente:', err);
-                    return reject(new Error('Error al verificar el correo electrónico en registro_pendiente.'));
+        // Ejecutar las consultas en paralelo
+        Promise.all([
+            new Promise((resolve, reject) => {
+                conexion.query(checkQueries[0], [email], (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results[0].count > 0);
+                });
+            }),
+            new Promise((resolve, reject) => {
+                conexion.query(checkQueries[1], [usuario], (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results[0].count > 0);
+                });
+            }),
+            new Promise((resolve, reject) => {
+                conexion.query(checkQueries[2], [email], (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results[0].count > 0);
+                });
+            }),
+            new Promise((resolve, reject) => {
+                conexion.query(checkQueries[3], [usuario], (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results[0].count > 0);
+                });
+            })
+        ])
+            .then(([emailInPlayaRP, userInPlayaRP, emailInPending, userInPending]) => {
+                if (emailInPlayaRP) {
+                    return reject(new Error('El correo electrónico ya se encuentra registrado.'));
+                }
+                if (userInPlayaRP) {
+                    return reject(new Error('El nombre de usuario ya está registrado usa otro.'));
+                }
+                if (emailInPending) {
+                    return reject(new Error('El correo electrónico está en proceso de registro.'));
+                }
+                if (userInPending) {
+                    return reject(new Error('El nombre de usuario está en proceso de registro.'));
                 }
 
-                if (results[0].count > 0) {
-                    return reject(new Error('El correo electrónico ya está registrado.'));
+                let salt = '';
+                for (let i = 0; i < 10; i++) {
+                    salt += String.fromCharCode(Math.floor(Math.random() * 79) + 47);
                 }
+
+                // Crear el hash de la contraseña usando el salt y convertirlo a mayúsculas
+                const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex').toUpperCase();
+
+                const token = crypto.randomBytes(32).toString('hex');
 
                 // Guardar el usuario con el salt y el hash en la base de datos
                 const insertQuery = 'INSERT INTO registro_pendiente (username, password_hash, salt, email, token) VALUES (?, ?, ?, ?, ?)';
                 const confirmationLink = `https://api.vida-roleplay.com/api/logueo/confirm/${token}`;
                 const emailBody = `
-                    <!DOCTYPE html>
-                    <html lang="es">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Confirmación de Registro</title>
-                    </head>
-                    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
-                        <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
-                            <img src="https://i.postimg.cc/Px5Q8nPk/Imagen-de-Whats-App-2024-07-29-a-las-19-07-48-3caaf1fa.jpg" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
-                            <h1 style="color: #ffffff;">¡Hola ${usuario}!</h1>
-                            <p style="color: #c0c0c0; line-height: 1.5;">Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
-                            <a href="${confirmationLink}" style="display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 14px 28px; font-size: 20px; font-weight: bold; background-color: #0069d9; color: #ffffff; text-decoration: none; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease-in-out;">Confirmar Registro</a>
-                            <p style="color: #c0c0c0;">Si no solicitaste este registro, por favor ignora este correo.</p>
-                            <div style="font-size: 12px; color: #888888; margin-top: 20px;">
-                                <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
-                                <p><img src="https://i.postimg.cc/XJ1cf1CB/email.png" alt="Email Icon" style="width: 24px; vertical-align: middle; margin-right: 8px;"> Si tienes problemas, contacta con soporte.</p>
-                            </div>
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Confirmación de Registro</title>
+                </head>
+                <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
+                    <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
+                        <img src="https://i.postimg.cc/Px5Q8nPk/Imagen-de-Whats-App-2024-07-29-a-las-19-07-48-3caaf1fa.jpg" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
+                        <h1 style="color: #ffffff;">¡Hola ${usuario}!</h1>
+                        <p style="color: #c0c0c0; line-height: 1.5;">Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
+                        <a href="${confirmationLink}" style="display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 14px 28px; font-size: 20px; font-weight: bold; background-color: #0069d9; color: #ffffff; text-decoration: none; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease-in-out;">Confirmar Registro</a>
+                        <p style="color: #c0c0c0;">Si no solicitaste este registro, por favor ignora este correo.</p>
+                        <div style="font-size: 12px; color: #888888; margin-top: 20px;">
+                            <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
+                            <p><img src="https://i.postimg.cc/XJ1cf1CB/email.png" alt="Email Icon" style="width: 24px; vertical-align: middle; margin-right: 8px;"> Si tienes problemas, contacta con soporte.</p>
                         </div>
-                    </body>
-                    </html>
-                `;
+                    </div>
+                </body>
+                </html>
+            `;
 
                 sendMail(email, emailBody)
                     .then(() => {
@@ -417,15 +442,34 @@ async function registerUser(usuario, password, email) {
                         console.error('Error al enviar el correo:', err);
                         reject(new Error('Error al enviar el correo electrónico. Verifica el correo ingresado.'));
                     });
+            })
+            .catch(err => {
+                console.error('Error al verificar los datos:', err);
+                reject(new Error('Error al verificar la existencia de usuario o correo electrónico.'));
             });
-        });
     });
 }
 
+
 function isValidEmail(email) {
+    // Expresión regular para validar el formato del correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+
+    // Verificar si el formato del correo electrónico es válido
+    if (!emailRegex.test(email)) {
+        return false;
+    }
+
+    // Convertir el correo a minúsculas para hacer la comparación
+    const lowerCaseEmail = email.toLowerCase();
+
+    // Verificar si el correo pertenece a uno de los dominios permitidos
+    const allowedDomains = ['hotmail.com', 'gmail.com', 'outlook.com'];
+    const domain = lowerCaseEmail.split('@')[1];
+
+    return allowedDomains.includes(domain);
 }
+
 
 function confirmUserRegistration(token) {
     return new Promise((resolve, reject) => {
