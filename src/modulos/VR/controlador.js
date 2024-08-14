@@ -36,6 +36,7 @@ module.exports = function (dbInyectada) {
         });
     }
 
+
     async function getTops() {
         try {
             const columnasTops = {

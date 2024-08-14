@@ -14,7 +14,7 @@ router.get('/tops', getTops);
 router.get('/certification-status', getCertificationStatus);
 router.get('/links', getLinks);
 router.post('/certify', certifyUser);
-router.post('/server-status', statusServer);
+router.get('/server-status', statusServer);
 
 
 async function statusServer(req, res) {
