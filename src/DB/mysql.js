@@ -69,7 +69,7 @@ async function updateCertificationStatus(userID, Tipo) {
         }
 
         // Ejecuta la consulta
-        conexion.query(query, [userID], (err, result) => {
+        conexion1.query(query, [userID], (err, result) => {
             if (err) {
                 return reject(err);
             }
@@ -83,7 +83,7 @@ async function updateCertificationStatus(userID, Tipo) {
 async function getLinks() {
     return new Promise((resolve, reject) => {
         const query = 'SELECT nombre, link FROM links';
-        conexion.query(query, (err, results) => {
+        conexion1.query(query, (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -102,7 +102,7 @@ async function getLinks() {
 async function getCertificationStatus(userID) {
     return new Promise((resolve, reject) => {
         const query = `SELECT CertUsuario, CertFacc FROM PlayaRP WHERE ID = ?`;
-        conexion.query(query, [userID], (err, results) => {
+        conexion1.query(query, [userID], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -127,7 +127,7 @@ async function getCertificationStatus(userID) {
 function getTops(columna) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM PlayaRP ORDER BY ${columna} DESC LIMIT 10`;
-        conexion.query(query, [], (err, results) => {
+        conexion1.query(query, [], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -157,7 +157,7 @@ function getTops(columna) {
 function getFaccion(memberID) {
     return new Promise((resolve, reject) => {
         const query = `SELECT Name FROM LeaderInfo WHERE Leader = ?`;
-        conexion.query(query, [memberID], (err, results) => {
+        conexion1.query(query, [memberID], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -169,7 +169,7 @@ function getFaccion(memberID) {
 function getAntecedentes(Name) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM Antecedentes WHERE Name = ?`;
-        conexion.query(query, [Name], (err, results) => {
+        conexion1.query(query, [Name], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -182,7 +182,7 @@ function getAntecedentes(Name) {
 function getMultas(Name) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM Ticketsys WHERE Name = ?`;
-        conexion.query(query, [Name], (err, results) => {
+        conexion1.query(query, [Name], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -195,7 +195,7 @@ function getMultas(Name) {
 async function getEstadisticas(userID, Name, tabla) {
     return new Promise(async (resolve, reject) => {
         const query = `SELECT * FROM ${tabla} WHERE ID = ?`;
-        conexion.query(query, [userID], async (err, results) => {
+        conexion1.query(query, [userID], async (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -223,7 +223,7 @@ async function getEstadisticas(userID, Name, tabla) {
 function getModelos(model) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM car_table WHERE vehicleid = ?`;
-        conexion.query(query, [model], (err, results) => {
+        conexion1.query(query, [model], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -237,7 +237,7 @@ function getAutos(userID, tabla) {
         // Primera consulta: obtener los modelos de la tabla
         const query1 = `SELECT * FROM ${tabla} WHERE Owner = ?`;
 
-        conexion.query(query1, [userID], async (err, results) => {
+        conexion1.query(query1, [userID], async (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -271,7 +271,7 @@ function getAutos(userID, tabla) {
 function getNegocios(userID, tabla) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
-        conexion.query(query, [userID], (err, results) => {
+        conexion1.query(query, [userID], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -283,7 +283,7 @@ function getNegocios(userID, tabla) {
 function getCasas(userID, tabla) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
-        conexion.query(query, [userID], (err, results) => {
+        conexion1.query(query, [userID], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -295,7 +295,7 @@ function getCasas(userID, tabla) {
 function getMovimientos(userID) {
     return new Promise((resolve, reject) => {
         const query = 'SELECT * FROM banco WHERE Owner = ?';
-        conexion.query(query, [userID], (err, results) => {
+        conexion1.query(query, [userID], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -328,7 +328,7 @@ function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
         const query = `SELECT ID,Name,  Pass, Salt FROM ${tabla} WHERE Name = ?`;
 
-        conexion.query(query, [usuario], (error, results) => {
+        conexion1.query(query, [usuario], (error, results) => {
             if (error) {
                 return reject(error);
             }
@@ -370,25 +370,25 @@ async function registerUser(usuario, password, email) {
         // Ejecutar las consultas en paralelo
         Promise.all([
             new Promise((resolve, reject) => {
-                conexion.query(checkQueries[0], [email], (err, results) => {
+                conexion1.query(checkQueries[0], [email], (err, results) => {
                     if (err) return reject(err);
                     resolve(results[0].count > 0);
                 });
             }),
             new Promise((resolve, reject) => {
-                conexion.query(checkQueries[1], [usuario], (err, results) => {
+                conexion1.query(checkQueries[1], [usuario], (err, results) => {
                     if (err) return reject(err);
                     resolve(results[0].count > 0);
                 });
             }),
             new Promise((resolve, reject) => {
-                conexion.query(checkQueries[2], [email], (err, results) => {
+                conexion1.query(checkQueries[2], [email], (err, results) => {
                     if (err) return reject(err);
                     resolve(results[0].count > 0);
                 });
             }),
             new Promise((resolve, reject) => {
-                conexion.query(checkQueries[3], [usuario], (err, results) => {
+                conexion1.query(checkQueries[3], [usuario], (err, results) => {
                     if (err) return reject(err);
                     resolve(results[0].count > 0);
                 });
@@ -447,7 +447,7 @@ async function registerUser(usuario, password, email) {
 
                 sendMail(email, emailBody)
                     .then(() => {
-                        conexion.query(insertQuery, [usuario, hashedPassword, salt, email, token], (err, result) => {
+                        conexion1.query(insertQuery, [usuario, hashedPassword, salt, email, token], (err, result) => {
                             if (err) {
                                 console.error('Error al insertar en la base de datos:', err);
                                 return reject(err);
@@ -493,7 +493,7 @@ function confirmUserRegistration(token) {
     return new Promise((resolve, reject) => {
         // Verificar si el token existe en la tabla `registro_pendiente`
         const selectQuery = 'SELECT * FROM registro_pendiente WHERE token = ?';
-        conexion.query(selectQuery, [token], (err, results) => {
+        conexion1.query(selectQuery, [token], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -507,14 +507,14 @@ function confirmUserRegistration(token) {
 
             // Insertar el usuario en la tabla de usuarios confirmados
             const insertQuery = 'INSERT INTO usuarios (username, password_hash, email) VALUES (?, ?, ?)';
-            conexion.query(insertQuery, [username, password_hash, email], (err, result) => {
+            conexion1.query(insertQuery, [username, password_hash, email], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
 
                 // Eliminar el registro de la tabla `registro_pendiente`
                 const deleteQuery = 'DELETE FROM registro_pendiente WHERE token = ?';
-                conexion.query(deleteQuery, [token], (err, result) => {
+                conexion1.query(deleteQuery, [token], (err, result) => {
                     if (err) {
                         return reject(err);
                     }
@@ -540,13 +540,13 @@ function posts(tabla, pagina = 1, limite = 10) {
         const countQuery = `SELECT COUNT(*) AS total FROM ??`;
 
         // Ejecutar la consulta principal
-        conexion.query(query, [tabla, limite, offset], (err, rows) => {
+        conexion1.query(query, [tabla, limite, offset], (err, rows) => {
             if (err) {
                 return reject(err);
             }
 
             // Ejecutar la consulta para obtener el total de registros
-            conexion.query(countQuery, [tabla], (err, result) => {
+            conexion1.query(countQuery, [tabla], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -572,13 +572,13 @@ function unpost(tabla, pagina = 1, limite = 10, userID = null, userName = null) 
         const countQuery = `SELECT COUNT(*) AS total FROM ?? WHERE user_id = ? AND Name = ?`;
 
         // Ejecutar la consulta principal
-        conexion.query(query, [tabla, userID, userName, limite, offset], (err, rows) => {
+        conexion1.query(query, [tabla, userID, userName, limite, offset], (err, rows) => {
             if (err) {
                 return reject(err);
             }
 
             // Ejecutar la consulta para obtener el total de registros
-            conexion.query(countQuery, [tabla, userID, userName], (err, result) => {
+            conexion1.query(countQuery, [tabla, userID, userName], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -599,13 +599,13 @@ function likePost(userId, userName, postId) {
         const insertLikeQuery = 'INSERT INTO `user_likes` (`user_id`, `user_name`, `post_id`) VALUES (?, ?, ?)';
 
         // Ejecutar la consulta para incrementar el contador de likes
-        conexion.query(updateLikesQuery, [postId], (err, result) => {
+        conexion1.query(updateLikesQuery, [postId], (err, result) => {
             if (err) {
                 return reject(err);
             }
 
             // Ejecutar la consulta para insertar el like en la tabla user_likes
-            conexion.query(insertLikeQuery, [userId, userName, postId], (err, result) => {
+            conexion1.query(insertLikeQuery, [userId, userName, postId], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -625,13 +625,13 @@ function unlikePost(userId, userName, postId) {
         const deleteLikeQuery = 'DELETE FROM `user_likes` WHERE `user_id` = ? AND `user_name` = ? AND `post_id` = ?';
 
         // Ejecutar la consulta para decrementar el contador de likes
-        conexion.query(updateLikesQuery, [postId], (err, result) => {
+        conexion1.query(updateLikesQuery, [postId], (err, result) => {
             if (err) {
                 return reject(err);
             }
 
             // Ejecutar la consulta para eliminar el like de la tabla user_likes
-            conexion.query(deleteLikeQuery, [userId, userName, postId], (err, result) => {
+            conexion1.query(deleteLikeQuery, [userId, userName, postId], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -647,7 +647,7 @@ function deletePost(tabla, postId) {
         const deletePostQuery = `DELETE FROM ?? WHERE id = ?`;
 
         // Primero, elimina el post de la tabla correspondiente
-        conexion.query(deletePostQuery, [tabla, postId], (err, result) => {
+        conexion1.query(deletePostQuery, [tabla, postId], (err, result) => {
             if (err) {
                 return reject(err);
             }
@@ -655,7 +655,7 @@ function deletePost(tabla, postId) {
             // Si la tabla es 'posts', también elimina los registros en 'user_likes'
             if (tabla === 'posts') {
                 const deleteLikesQuery = `DELETE FROM user_likes WHERE post_id = ?`;
-                conexion.query(deleteLikesQuery, [postId], (err, result) => {
+                conexion1.query(deleteLikesQuery, [postId], (err, result) => {
                     if (err) {
                         return reject(err);
                     }
@@ -681,13 +681,13 @@ function anuncios(tabla, pagina = 1, limite = 10, tipo = "A") {
         const countQuery = `SELECT COUNT(*) AS total FROM ?? WHERE Tipo = ?`;
 
         // Ejecutar la consulta principal
-        conexion.query(query, [tabla, tipo, limite, offset], (err, rows) => {
+        conexion1.query(query, [tabla, tipo, limite, offset], (err, rows) => {
             if (err) {
                 return reject(err);
             }
 
             // Ejecutar la consulta para obtener el total de registros
-            conexion.query(countQuery, [tabla, tipo], (err, result) => {
+            conexion1.query(countQuery, [tabla, tipo], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -711,13 +711,13 @@ function unAnuncio(tabla, pagina = 1, limite = 10, userID = null, userName = nul
         const countQuery = `SELECT COUNT(*) AS total FROM ?? WHERE user_id = ? AND Name = ? AND Tipo = ?`;
 
         // Ejecutar la consulta principal
-        conexion.query(query, [tabla, userID, userName, tipo, limite, offset], (err, rows) => {
+        conexion1.query(query, [tabla, userID, userName, tipo, limite, offset], (err, rows) => {
             if (err) {
                 return reject(err);
             }
 
             // Ejecutar la consulta para obtener el total de registros
-            conexion.query(countQuery, [tabla, userID, userName, tipo], (err, result) => {
+            conexion1.query(countQuery, [tabla, userID, userName, tipo], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -733,7 +733,7 @@ function unAnuncio(tabla, pagina = 1, limite = 10, userID = null, userName = nul
 function crearPost(tabla, data) {
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO ${mysql.escapeId(tabla)} SET ?`;
-        conexion.query(query, data, (err, rows) => {
+        conexion1.query(query, data, (err, rows) => {
             return err ? reject(err) : resolve(rows);
         });
     });
@@ -748,7 +748,7 @@ function emisoras(tabla, tipo = "E") {
 
 
         // Ejecutar la consulta principal
-        conexion.query(query, [tabla, tipo], (err, rows) => {
+        conexion1.query(query, [tabla, tipo], (err, rows) => {
             if (err) {
                 return reject(err);
             }
@@ -767,7 +767,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 
 
         // Ejecutar la consulta principal
-        conexion.query(query, [tabla, tipo, tipo2], (err, rows) => {
+        conexion1.query(query, [tabla, tipo, tipo2], (err, rows) => {
             if (err) {
                 return reject(err);
             }
