@@ -1,4 +1,3 @@
-const sampQuery = require('samp-query');
 const TABLA_ESTADISTICAS = 'PlayaRP';
 const TABLA_AUTOS = 'Car';
 const TABLA_NEGOCIOS = {
@@ -17,25 +16,15 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
-
-    // Configuración del servidor SAMP
-    const serverOptions = {
-        host: '45.126.208.53', // IP del servidor SAMP
-        port: 7777 // Puerto del servidor SAMP
-    };
-
-    // Nueva función para obtener el estado del servidor usando la librería samp-query
+    // Nueva función para obtener el estado del servidor desde mysql.js
     async function getServerStatus() {
-        return new Promise((resolve, reject) => {
-            sampQuery(serverOptions, (error, response) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(response);
-            });
-        });
+        try {
+            const status = await db.getServerStatus(); // Llama a la función en mysql.js
+            return status;
+        } catch (error) {
+            throw error;
+        }
     }
-
 
     async function getTops() {
         try {

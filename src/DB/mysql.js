@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const config = require('../config');
+const sampQuery = require('samp-query');
 
 const dbconfig = {
     host: config.mysql.host,
@@ -35,6 +36,24 @@ function conmysql() {
 }
 
 conmysql();
+
+// Configuración del servidor SAMP
+const serverOptions = {
+    host: '45.126.208.53', // IP del servidor SAMP
+    port: 7777 // Puerto del servidor SAMP
+};
+
+// Función para obtener el estado del servidor SAMP
+async function getServerStatus() {
+    return new Promise((resolve, reject) => {
+        sampQuery(serverOptions, (error, response) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(response);
+        });
+    });
+}
 
 
 async function updateCertificationStatus(userID, Tipo) {
@@ -760,6 +779,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    getServerStatus,
     updateCertificationStatus,
     getLinks,
     getTops,
