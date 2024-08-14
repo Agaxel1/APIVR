@@ -19,6 +19,7 @@ module.exports = function (dbInyectada) {
     async function getTops() {
         try {
             const columnasTops = {
+                PuntosDeRol: 'TOP puntos de rol',
                 Bank: 'TOP dinero',
                 HorasJugadas: 'TOP horas jugadas',
                 DineroGastado: 'TOP dinero gastado'
