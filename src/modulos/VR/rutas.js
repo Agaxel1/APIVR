@@ -19,8 +19,7 @@ router.get('/server-status', statusServer);
 
 async function statusServer(req, res) {
     try {
-        const status = await controlador.getServerStatus(); // Llama a la función en controlador.js
-        console.log("Estado del servidor SAMP:", JSON.stringify(status, null, 2)); // Log con formato legible
+        const status = await controlador.getServerStatus(); // Llama a la función del controlador que obtiene el estado del servidor
         respuestas.success(req, res, status, 200);
     } catch (error) {
         console.error('Error al obtener el estado del servidor:', error);
