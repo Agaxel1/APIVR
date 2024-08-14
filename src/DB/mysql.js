@@ -355,7 +355,7 @@ function Login(tabla, usuario, password) {
     });
 }
 
-async function registerUser(usuario, password, email) {
+async function registerUser(usuario, password, email, sexo, nacionalidad, raza) {
     return new Promise((resolve, reject) => {
         // Verificar el formato del correo electrónico
         if (!isValidEmail(email)) {
@@ -422,7 +422,7 @@ async function registerUser(usuario, password, email) {
                 const token = crypto.randomBytes(32).toString('hex');
 
                 // Guardar el usuario con el salt y el hash en la base de datos
-                const insertQuery = 'INSERT INTO registro_pendiente (username, password_hash, salt, email, token) VALUES (?, ?, ?, ?, ?)';
+                const insertQuery = 'INSERT INTO registro_pendiente (email, username, password_hash, salt, Gorod, Sex,Race, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
                 const confirmationLink = `https://api.vida-roleplay.com/api/logueo/confirm/${token}`;
                 const emailBody = `
                 <!DOCTYPE html>
@@ -447,10 +447,9 @@ async function registerUser(usuario, password, email) {
                 </body>
                 </html>
             `;
-
                 sendMail(email, emailBody)
                     .then(() => {
-                        conexion.query(insertQuery, [usuario, hashedPassword, salt, email, token], (err, result) => {
+                        conexion.query(insertQuery, [email, usuario, hashedPassword, salt, nacionalidad, sexo, raza, token], (err, result) => {
                             if (err) {
                                 console.error('Error al insertar en la base de datos:', err);
                                 return reject(err);
@@ -496,6 +495,15 @@ function confirmUserRegistration(token) {
     return new Promise((resolve, reject) => {
         // Verificar si el token existe en la tabla `registro_pendiente`
         const selectQuery = 'SELECT * FROM registro_pendiente WHERE token = ?';
+        const MoneyVR = 2000;
+        const Bank = 5000;
+        const X = '1728.48';
+        const Y = '-1912.15';
+        const Z = '13.5633';
+        const A = '99.446';
+        const Inventory = '241|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0';
+        const Health = 100.00;
+
         conexion.query(selectQuery, [token], (err, results) => {
             if (err) {
                 return reject(err);
@@ -506,11 +514,21 @@ function confirmUserRegistration(token) {
             }
 
             // Extraer los datos del usuario
-            const { username, password_hash, email } = results[0];
+            const { username, email, password_hash, Salt, Gorod, Sex, Race } = results[0];
+
+            // Asignar el valor de Skin según el valor de Sex
+            let Skin = (Sex === 1) ? 26 : 13;
 
             // Insertar el usuario en la tabla de usuarios confirmados
-            const insertQuery = 'INSERT INTO usuarios (username, password_hash, email) VALUES (?, ?, ?)';
-            conexion.query(insertQuery, [username, password_hash, email], (err, result) => {
+            const insertQuery = `
+                INSERT INTO usuarios (
+                    Name, Mail, Pass, Salt, Sex, Race, MoneyVR, Skin, Level, Eat, Need, Soif, Sleep, Higiene, Diversion, Shame, Enfermedad, Alcohol, X, Y, Z, A, Inventory, Health, Gorod, Bank
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, 0, 100, 100, 100, 100, 100, 100, 100, 0, 0, ?, ?, ?, ?, ?, ?, ?, ?
+                )
+            `;
+
+            conexion.query(insertQuery, [username, email, password_hash, Salt, Sex, Race, MoneyVR, Skin, X, Y, Z, A, Inventory, Health, Gorod, Bank], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
@@ -528,6 +546,7 @@ function confirmUserRegistration(token) {
         });
     });
 }
+
 
 
 

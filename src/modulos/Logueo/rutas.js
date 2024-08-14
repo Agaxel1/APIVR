@@ -69,15 +69,14 @@ async function checkAuth(req, res) {
 }
 
 async function register(req, res) {
-    const { username, email, password, passwordConfirm } = req.body;
+    const { username, email, password, passwordConfirm, sexo, nacionalidad, raza} = req.body;
 
     if (password !== passwordConfirm) {
         return respuestas.error(req, res, 'Las contraseñas no coinciden', 400);
     }
 
     try {
-        const token = crypto.randomBytes(32).toString('hex');
-        await controlador.registerUser(username, email, password, token);
+        await controlador.registerUser(username, email, password, sexo, nacionalidad, raza);
         respuestas.success(req, res, 'Registro exitoso. Por favor, revisa tu correo para confirmar tu registro.', 200);
     } catch (err) {
         respuestas.error(req, res, err.message || 'Error al registrar usuario', 200);

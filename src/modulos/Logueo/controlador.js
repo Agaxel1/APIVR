@@ -27,9 +27,9 @@ module.exports = function (dbInyectada) {
         });
     }
 
-    async function registerUser(username, email, password, token) {
+    async function registerUser(username, email, password, sexo, nacionalidad, raza) {
         try {
-            await db.registerUser(username, password, email, token);
+            await db.registerUser(username, password, email, sexo, nacionalidad, raza);
             return;  // Puedes devolver algo si es necesario
         } catch (error) {
             throw error;
