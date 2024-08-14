@@ -51,13 +51,7 @@ async function getServerStatus() {
                 return reject(error);
             }
             // Asegúrate de que 'response' tenga los datos necesarios
-            resolve({
-                isOnline: response.online,
-                players: response.players,
-                maxplayers: response.maxplayers,
-                hostname: response.hostname,
-                gamemode: response.gamemode
-            });
+            resolve(response);
         });
     });
 }
