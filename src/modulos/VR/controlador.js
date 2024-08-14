@@ -1,3 +1,4 @@
+const sampQuery = require('samp-query');
 const TABLA_ESTADISTICAS = 'PlayaRP';
 const TABLA_AUTOS = 'Car';
 const TABLA_NEGOCIOS = {
