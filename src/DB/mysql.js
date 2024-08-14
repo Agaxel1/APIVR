@@ -344,7 +344,7 @@ async function registerUser(usuario, password, email) {
         // Verificar si el correo ya está en PlayaRP y si el usuario ya existe en PlayaRP o en registro_pendiente
         const checkQueries = [
             'SELECT COUNT(*) AS count FROM PlayaRP WHERE Mail = ?',
-            'SELECT COUNT(*) AS count FROM PlayaRP WHERE username = ?',
+            'SELECT COUNT(*) AS count FROM PlayaRP WHERE Name = ?',
             'SELECT COUNT(*) AS count FROM registro_pendiente WHERE email = ?',
             'SELECT COUNT(*) AS count FROM registro_pendiente WHERE username = ?'
         ];
