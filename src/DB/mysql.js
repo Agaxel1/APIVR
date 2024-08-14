@@ -353,8 +353,10 @@ async function registerUser(usuario, password, email) {
                 return reject(new Error('El correo electrónico ya se encuentra registrado.'));
             }
 
-            // Generar un salt aleatorio de 10 caracteres
-            const salt = crypto.randomBytes(10).toString('hex');
+            let salt = '';
+            for (let i = 0; i < 10; i++) {
+                salt += String.fromCharCode(Math.floor(Math.random() * 79) + 47);
+            }
 
             // Crear el hash de la contraseña usando el salt y convertirlo a mayúsculas
             const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex').toUpperCase();
@@ -418,11 +420,6 @@ async function registerUser(usuario, password, email) {
             });
         });
     });
-}
-
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
 }
 
 function isValidEmail(email) {
