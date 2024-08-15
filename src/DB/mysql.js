@@ -42,11 +42,13 @@ const serverOptions = {
     port: config.samp.port // Usando el puerto desde config.js
 };
 
+
 async function getServerStatusmysql() {
-    console.log("Host ", host);
-    console.log("port ", port);
+    console.log("Host ", serverOptions.host);
+    console.log("Port ", serverOptions.port);
+    console.log("Todo ", serverOptions);
+
     return new Promise((resolve, reject) => {
-        console.log("Todo ", serverOptions);
         sampQuery(serverOptions, (error, response) => {
             if (error) {
                 console.error("Error al consultar el servidor SAMP:", error);
@@ -56,6 +58,7 @@ async function getServerStatusmysql() {
         });
     });
 }
+
 
 
 async function updateCertificationStatus(userID, Tipo) {
