@@ -44,10 +44,6 @@ const serverOptions = {
 
 
 async function getServerStatusmysql() {
-    console.log("Host ", serverOptions.host);
-    console.log("Port ", serverOptions.port);
-    console.log("Todo ", serverOptions);
-
     return new Promise((resolve, reject) => {
         sampQuery(serverOptions, (error, response) => {
             if (error) {
