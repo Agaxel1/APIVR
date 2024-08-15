@@ -50,7 +50,8 @@ function findUserByEmail(tabla, email) {
     });
 }
 
-function storePasswordResetToken(userId, token, expiration) {
+function storePasswordResetToken(userId, expiration) {
+    const token = crypto.randomBytes(32).toString('hex');
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO password_resets (user_id, token, expiration) VALUES (?, ?, ?)`;
         conexion.query(query, [userId, token, expiration], (error) => {

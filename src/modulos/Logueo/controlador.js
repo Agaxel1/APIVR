@@ -13,10 +13,9 @@ module.exports = function (dbInyectada) {
     }
 
     async function generatePasswordResetToken(userId) {
-        const token = crypto.randomBytes(32).toString('hex');
         const expiration = Date.now() + 3600000; // 1 hora desde ahora
 
-        await db.storePasswordResetToken(userId, token, expiration);
+        await db.storePasswordResetToken(userId, expiration);
         return token;
     }
 
