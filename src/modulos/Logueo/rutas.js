@@ -45,17 +45,15 @@ async function forgotPassword(req, res) {
 }
 
 async function resetPassword(req, res) {
-    const { token } = req.params;
-    const { newPassword } = req.body;
+    const { resetToken, newPassword } = req.body; // Cambiar de token a resetToken
 
     try {
-        await controlador.resetUserPassword(token, newPassword);
+        await controlador.resetUserPassword(resetToken, newPassword); // Usar resetToken
         respuestas.success(req, res, 'Contraseña restablecida correctamente.', 200);
     } catch (err) {
         respuestas.error(req, res, 'El token es inválido o ha expirado.', 400);
     }
 }
-
 
 async function login(req, res) {
     const { usuario, password } = req.body;
