@@ -22,7 +22,8 @@ async function statusServer(req, res) {
         const status = await controlador.getServerStatus(); // Llama a la función del controlador que obtiene el estado del servidor
         respuestas.success(req, res, status, 200);
     } catch (error) {
-        respuestas.error(req, res, error, 200);
+        console.error('Error al obtener el estado del servidor:', error);
+        respuestas.error(req, res, 'Error al obtener el estado del servidor', 500);
     }
 }
 
