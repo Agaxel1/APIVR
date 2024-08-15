@@ -39,8 +39,7 @@ conmysql();
 
 const serverOptions = {
     host: config.samp.host, // Usando la IP desde config.js
-    port: config.samp.port, // Usando el puerto desde config.js
-    timeout: 5000 // Ajuste del timeout a 5 segundos
+    port: config.samp.port // Usando el puerto desde config.js
 };
 
 async function getServerStatus() {
