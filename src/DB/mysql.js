@@ -40,7 +40,8 @@ conmysql();
 // Configuración del servidor SAMP
 const serverOptions = {
     host: '45.126.208.53', // IP del servidor SAMP
-    port: 7777 // Puerto del servidor SAMP
+    port: 7777, // Puerto del servidor SAMP
+    timeout: 2000
 };
 
 // Función para obtener el estado del servidor SAMP
