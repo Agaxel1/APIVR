@@ -2,7 +2,7 @@ const mysql = require('mysql');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const config = require('../config');
-const Gamedig = require('gamedig');
+const sampQuery = require('samp-query');
 
 const dbconfig = {
     host: config.mysql.host,
@@ -37,19 +37,23 @@ function conmysql() {
 
 conmysql();
 
-// Función para obtener el estado del servidor SAMP usando Gamedig
+// Configuración del servidor SAMP desde config.js
+const serverOptions = {
+    host: config.samp.host, // Usando la IP desde config.js
+    port: config.samp.port // Usando el puerto desde config.js
+};
+
+// Función para obtener el estado del servidor SAMP usando samp-query
 async function getServerStatus() {
-    try {
-        const serverInfo = await Gamedig.query({
-            type: 'samp',
-            host: config.samp.host, // Usando la IP desde config.js
-            port: config.samp.port // Usando el puerto desde config.js
+    return new Promise((resolve, reject) => {
+        sampQuery(serverOptions, (error, response) => {
+            if (error) {
+                console.error("Error al consultar el servidor SAMP:", error);
+                return resolve({ error: true, body: "Host unavailable" }); // Respuesta consistente en caso de error
+            }
+            resolve({ error: false, body: response });
         });
-        return { error: false, body: serverInfo };
-    } catch (error) {
-        console.error("Error al consultar el servidor SAMP:", error);
-        return { error: true, body: "Host unavailable" };
-    }
+    });
 }
 
 
