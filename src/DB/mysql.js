@@ -48,7 +48,7 @@ async function getServerStatus() {
     return new Promise((resolve, reject) => {
         sampQuery(serverOptions, (error, response) => {
             if (error) {
-                console.error("Error al consultar el servidor SAMP:", error.message);
+                console.error("Error al consultar el servidor SAMP:", error);
                 return resolve({ error: true, body: "Host unavailable" }); // Asegura una respuesta consistente
             }
             resolve({ error: false, body: response });
