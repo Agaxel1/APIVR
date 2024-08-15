@@ -26,7 +26,7 @@ async function forgotPassword(req, res) {
         }
 
         const token = await controlador.generatePasswordResetToken(user.ID);
-        const resetLink = `http://127.0.0.1:5500/password.html?token=${token}`;  // Enlace con token como parámetro
+        const resetLink = `http://127.0.0.1:5500/password.html?token=${token}`;
 
         // Enviar correo
         const emailBody = `
@@ -39,6 +39,7 @@ async function forgotPassword(req, res) {
 
         respuestas.success(req, res, 'Si existe una cuenta con este correo, recibirás un enlace para restablecer tu contraseña.', 200);
     } catch (err) {
+        console.error('Error en forgotPassword:', err.message); // Agrega un log para el error
         respuestas.error(req, res, 'Hubo un error al procesar la solicitud.', 500);
     }
 }
