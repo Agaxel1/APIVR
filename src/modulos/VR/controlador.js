@@ -19,7 +19,7 @@ module.exports = function (dbInyectada) {
     // Nueva función para obtener el estado del servidor desde mysql.js
     async function getServerStatus() {
         try {
-            const status = await db.getServerStatus(); // Llama a la función en mysql.js
+            const status = await db.getServerStatusmysql(); // Llama a la función en mysql.js
             return status;
         } catch (error) {
             throw error;

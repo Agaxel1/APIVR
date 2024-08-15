@@ -42,7 +42,7 @@ const serverOptions = {
     port: config.samp.port // Usando el puerto desde config.js
 };
 
-async function getServerStatus() {
+async function getServerStatusmysql() {
     console.log("Host ", host);
     console.log("port ", port);
     return new Promise((resolve, reject) => {
@@ -809,7 +809,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
-    getServerStatus,
+    getServerStatusmysql,
     updateCertificationStatus,
     getLinks,
     getTops,
