@@ -42,8 +42,8 @@ async function getServerStatus() {
     try {
         const serverInfo = await Gamedig.query({
             type: 'samp',
-            host: '45.126.208.53', // IP del servidor SAMP
-            port: 7777 // Puerto del servidor SAMP
+            host: config.samp.host, // Usando la IP desde config.js
+            port: config.samp.port // Usando el puerto desde config.js
         });
         return { error: false, body: serverInfo };
     } catch (error) {
@@ -51,7 +51,6 @@ async function getServerStatus() {
         return { error: true, body: "Host unavailable" };
     }
 }
-
 
 
 

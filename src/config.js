@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 module.exports = {
@@ -27,5 +26,9 @@ module.exports = {
     discord: {
         token: process.env.DISCORD_TOKEN,
         channelId: process.env.DISCORD_CHANNEL_ID
+    },
+    samp: {
+        host: process.env.SAMP_HOST,
+        port: process.env.SAMP_PORT
     }
-}
+};
