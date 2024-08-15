@@ -34,7 +34,13 @@ module.exports = function (dbInyectada) {
         await db.deleteResetToken(token);
     }
 
-
+    async function sendMail(email, emailBody) {
+        try {
+            await db.sendMail(email, emailBody);
+        } catch (error) {
+            throw error;
+        }
+    }
 
 
     async function Login(req, usuario, password) {
@@ -76,6 +82,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        sendMail,
         resetUserPassword,
         generatePasswordResetToken,
         findUserByEmail,
