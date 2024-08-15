@@ -7,6 +7,35 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
+    async function findUserByEmail(email) {
+        const user = await db.findUserByEmail(TABLA, email);
+        return user;
+    }
+
+    async function generatePasswordResetToken(userId) {
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiration = Date.now() + 3600000; // 1 hora desde ahora
+
+        await db.storePasswordResetToken(userId, token, expiration);
+        return token;
+    }
+
+    async function resetUserPassword(token, newPassword) {
+        const resetInfo = await db.findResetToken(TABLA, token);
+
+        if (!resetInfo || resetInfo.expiration < Date.now()) {
+            throw new Error('Token inválido o expirado');
+        }
+
+        await db.updateUserPassword(resetInfo.user_id, newPassword);
+
+        // Limpia el token después de usarlo
+        await db.deleteResetToken(token);
+    }
+
+
+
+
     async function Login(req, usuario, password) {
         try {
             const user = await db.Login(TABLA, usuario, password);
@@ -46,6 +75,9 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        resetUserPassword,
+        generatePasswordResetToken,
+        findUserByEmail,
         Login,
         Logout,
         registerUser,

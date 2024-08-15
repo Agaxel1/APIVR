@@ -37,6 +37,73 @@ function conmysql() {
 
 conmysql();
 
+/*****Contraseña olvidada*****/
+
+function findUserByEmail(tabla, email) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT ID, Name FROM usuarios WHERE Mail = ?`;
+        conexion.query(query, [email], (error, results) => {
+            if (error) return reject(error);
+            if (results.length === 0) return resolve(null);
+            resolve(results[0]);
+        });
+    });
+}
+
+function storePasswordResetToken(userId, token, expiration) {
+    return new Promise((resolve, reject) => {
+        const query = `INSERT INTO password_resets (user_id, token, expiration) VALUES (?, ?, ?)`;
+        conexion.query(query, [userId, token, expiration], (error) => {
+            if (error) return reject(error);
+            resolve();
+        });
+    });
+}
+
+function findResetToken(tabla, token) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT user_id, expiration FROM password_resets WHERE token = ?`;
+        conexion.query(query, [token], (error, results) => {
+            if (error) return reject(error);
+            if (results.length === 0) return resolve(null);
+            resolve(results[0]);
+        });
+    });
+}
+
+async function updateUserPassword(userId, newPassword) {
+    return new Promise((resolve, reject) => {
+        // Generar un nuevo salt
+        let salt = '';
+        for (let i = 0; i < 10; i++) {
+            salt += String.fromCharCode(Math.floor(Math.random() * 79) + 47);
+        }
+
+        // Crear el hash de la nueva contraseña
+        const hashedPassword = crypto.createHash('sha256').update(newPassword + salt).digest('hex').toUpperCase();
+
+        // Actualizar la contraseña en la base de datos
+        const query = `UPDATE usuarios SET Pass = ?, Salt = ? WHERE ID = ?`;
+        conexion.query(query, [hashedPassword, salt, userId], (error) => {
+            if (error) return reject(error);
+            resolve();
+        });
+    });
+}
+
+function deleteResetToken(token) {
+    return new Promise((resolve, reject) => {
+        const query = `DELETE FROM password_resets WHERE token = ?`;
+        conexion.query(query, [token], (error) => {
+            if (error) return reject(error);
+            resolve();
+        });
+    });
+}
+
+/*********************** */
+
+
 const serverOptions = {
     host: config.samp.host, // Usando la IP desde config.js
     port: config.samp.port // Usando el puerto desde config.js
@@ -808,6 +875,11 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    findUserByEmail,
+    storePasswordResetToken,
+    findResetToken,
+    updateUserPassword,
+    deleteResetToken,
     getServerStatusmysql,
     updateCertificationStatus,
     getLinks,

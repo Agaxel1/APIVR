@@ -1,7 +1,6 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
-const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
 
@@ -11,8 +10,51 @@ router.post('/login', login);
 router.post('/register', register);
 router.get('/confirm/:token', confirm);
 router.get('/checkAuth', checkAuth);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 const linkconfirm = "http://127.0.0.1:5500/confirmacionExitosa.html"
+
+async function forgotPassword(req, res) {
+    const { email } = req.body;
+
+    try {
+        const user = await controlador.findUserByEmail(email);
+
+        if (!user) {
+            return respuestas.success(req, res, 'Si existe una cuenta con este correo, recibirás un enlace para restablecer tu contraseña.', 200);
+        }
+
+        const token = await controlador.generatePasswordResetToken(user.ID);
+        const resetLink = `http://127.0.0.1:5500/password.html?token=${token}`;  // Enlace con token como parámetro
+
+        // Enviar correo
+        const emailBody = `
+            <p>Hola ${user.Name},</p>
+            <p>Recibimos una solicitud para restablecer tu contraseña. Puedes hacerlo usando el siguiente enlace:</p>
+            <a href="${resetLink}">Restablecer contraseña</a>
+            <p>Si no solicitaste este cambio, simplemente ignora este correo.</p>
+        `;
+        await controlador.sendMail(email, emailBody);
+
+        respuestas.success(req, res, 'Si existe una cuenta con este correo, recibirás un enlace para restablecer tu contraseña.', 200);
+    } catch (err) {
+        respuestas.error(req, res, 'Hubo un error al procesar la solicitud.', 500);
+    }
+}
+
+async function resetPassword(req, res) {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    try {
+        await controlador.resetUserPassword(token, newPassword);
+        respuestas.success(req, res, 'Contraseña restablecida correctamente.', 200);
+    } catch (err) {
+        respuestas.error(req, res, 'El token es inválido o ha expirado.', 400);
+    }
+}
+
 
 async function login(req, res) {
     const { usuario, password } = req.body;
@@ -64,7 +106,7 @@ async function checkAuth(req, res) {
 }
 
 async function register(req, res) {
-    const { username, email, password, passwordConfirm, sexo, nacionalidad, raza} = req.body;
+    const { username, email, password, passwordConfirm, sexo, nacionalidad, raza } = req.body;
 
     if (password !== passwordConfirm) {
         return respuestas.error(req, res, 'Las contraseñas no coinciden', 400);
