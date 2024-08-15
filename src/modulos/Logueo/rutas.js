@@ -43,24 +43,19 @@ async function login(req, res) {
 
 async function checkAuth(req, res) {
     const authHeader = req.headers.authorization;
-    console.log("Auth header:", authHeader);
 
     if (!authHeader) {
-        console.log('No auth header provided');
         return respuestas.success(req, res, { authenticated: false }, 200);
     }
 
     const token = authHeader.split(' ')[1];
-    console.log('Received token:', token);
 
     if (!token) {
-        console.log('Token is undefined');
         return respuestas.success(req, res, { authenticated: false }, 200);
     }
 
     try {
         const decoded = jwt.verify(token, config.jwt.secret);
-        console.log('Decoded token:', decoded);
         respuestas.success(req, res, { authenticated: true, user: decoded }, 200);
     } catch (err) {
         console.error('Token verification error:', err);
