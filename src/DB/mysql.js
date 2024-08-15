@@ -876,6 +876,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    sendMail,
     findUserByEmail,
     storePasswordResetToken,
     findResetToken,
