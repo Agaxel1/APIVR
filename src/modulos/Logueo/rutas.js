@@ -51,7 +51,7 @@ async function resetPassword(req, res) {
         await controlador.resetUserPassword(resetToken, newPassword); // Usar resetToken
         respuestas.success(req, res, 'Contraseña restablecida correctamente.', 200);
     } catch (err) {
-        respuestas.error(req, res, 'El token es inválido o ha expirado.', 400);
+        respuestas.error(req, res, 'El token es inválido o ha expirado.', 401);
     }
 }
 
