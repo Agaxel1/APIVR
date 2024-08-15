@@ -56,7 +56,7 @@ function storePasswordResetToken(userId, expiration) {
         const query = `INSERT INTO password_resets (user_id, token, expiration) VALUES (?, ?, ?)`;
         conexion.query(query, [userId, token, expiration], (error) => {
             if (error) return reject(error);
-            resolve();
+            resolve(token); // Retorna el token además de resolver el Promise
         });
     });
 }

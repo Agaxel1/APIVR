@@ -15,9 +15,11 @@ module.exports = function (dbInyectada) {
     async function generatePasswordResetToken(userId) {
         const expiration = Date.now() + 3600000; // 1 hora desde ahora
 
-        await db.storePasswordResetToken(userId, expiration);
+        // Llama a storePasswordResetToken y recibe el token generado
+        const token = await db.storePasswordResetToken(userId, expiration);
         return token;
     }
+
 
     async function resetUserPassword(token, newPassword) {
         const resetInfo = await db.findResetToken(TABLA, token);
