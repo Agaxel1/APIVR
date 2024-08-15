@@ -37,25 +37,23 @@ function conmysql() {
 
 conmysql();
 
-// Configuración del servidor SAMP desde config.js
 const serverOptions = {
     host: config.samp.host, // Usando la IP desde config.js
-    port: config.samp.port // Usando el puerto desde config.js
+    port: config.samp.port, // Usando el puerto desde config.js
+    timeout: 5000 // Ajuste del timeout a 5 segundos
 };
 
-// Función para obtener el estado del servidor SAMP usando samp-query
 async function getServerStatus() {
     return new Promise((resolve, reject) => {
         sampQuery(serverOptions, (error, response) => {
             if (error) {
                 console.error("Error al consultar el servidor SAMP:", error);
-                return resolve({ error: true, body: "Host unavailable" }); // Respuesta consistente en caso de error
+                return resolve({ error: true, body: "Host unavailable" });
             }
             resolve({ error: false, body: response });
         });
     });
 }
-
 
 
 async function updateCertificationStatus(userID, Tipo) {
