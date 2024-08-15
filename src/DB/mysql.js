@@ -411,13 +411,13 @@ async function registerUser(usuario, password, email, sexo, nacionalidad, raza) 
                     return reject(new Error('El correo electrónico ya se encuentra registrado.'));
                 }
                 if (userInPlayaRP) {
-                    return reject(new Error('El nombre de usuario ya está registrado usa otro.'));
+                    return reject(new Error('El nombre de usuario ya está registrado, usa otro.'));
                 }
                 if (emailInPending) {
                     return reject(new Error('El correo electrónico está en proceso de registro.'));
                 }
                 if (userInPending) {
-                    return reject(new Error('El nombre de usuario está en proceso de registro.'));
+                    return reject(new Error('El nombre de usuario está en proceso de registro, usa otro.'));
                 }
 
                 let salt = '';
