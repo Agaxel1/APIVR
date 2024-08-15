@@ -43,7 +43,10 @@ const serverOptions = {
 };
 
 async function getServerStatus() {
+    console.log("Host ", host);
+    console.log("port ", port);
     return new Promise((resolve, reject) => {
+        console.log("Todo ", serverOptions);
         sampQuery(serverOptions, (error, response) => {
             if (error) {
                 console.error("Error al consultar el servidor SAMP:", error);
