@@ -157,7 +157,7 @@ async function updateUserChangePassword(tabla, userID, currentPassword, newPassw
             const newHashedPassword = crypto.createHash('sha256').update(newPassword + newSalt).digest('hex').toUpperCase();
 
             // Actualizar la contraseña en la base de datos
-            const query2 = `UPDATE ${tabla} SET Pass = ?, Salt = ? WHERE ID = ?`;
+            const query2 = `UPDATE usuarios SET Pass = ?, Salt = ? WHERE ID = ?`;
             conexion.query(query2, [newHashedPassword, newSalt, userID], (error) => {
                 if (error) return reject(error);
                 resolve('Contraseña actualizada correctamente');
