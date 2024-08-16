@@ -41,7 +41,7 @@ conmysql();
 
 function findUserByEmail(tabla, email) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT ID, Name FROM usuarios WHERE Mail = ?`;
+        const query = `SELECT ID, Name FROM PlayaRP WHERE Mail = ?`;
         conexion.query(query, [email], (error, results) => {
             if (error) return reject(error);
             if (results.length === 0) return resolve(null);
@@ -87,7 +87,7 @@ async function updateUserPassword(userId, newPassword) {
         const hashedPassword = crypto.createHash('sha256').update(newPassword + salt).digest('hex').toUpperCase();
 
         // Actualizar la contraseña en la base de datos
-        const query = `UPDATE usuarios SET Pass = ?, Salt = ? WHERE ID = ?`;
+        const query = `UPDATE PlayaRP SET Pass = ?, Salt = ? WHERE ID = ?`;
         conexion.query(query, [hashedPassword, salt, userId], (error) => {
             if (error) return reject(error);
             resolve();
@@ -126,7 +126,7 @@ function Login(tabla, usuario, password) {
 
 async function updateUserChangePassword(tabla, userID, currentPassword, newPassword) {
     return new Promise((resolve, reject) => {
-        const query1 = `SELECT ID, Name, Pass, Salt FROM usuarios WHERE ID = ?`;
+        const query1 = `SELECT ID, Name, Pass, Salt FROM PlayaRP WHERE ID = ?`;
 
         conexion.query(query1, [userID], (error, results) => {
             if (error) {
@@ -157,7 +157,7 @@ async function updateUserChangePassword(tabla, userID, currentPassword, newPassw
             const newHashedPassword = crypto.createHash('sha256').update(newPassword + newSalt).digest('hex').toUpperCase();
 
             // Actualizar la contraseña en la base de datos
-            const query2 = `UPDATE usuarios SET Pass = ?, Salt = ? WHERE ID = ?`;
+            const query2 = `UPDATE PlayaRP SET Pass = ?, Salt = ? WHERE ID = ?`;
             conexion.query(query2, [newHashedPassword, newSalt, userID], (error) => {
                 if (error) return reject(error);
                 resolve('Contraseña actualizada correctamente');
@@ -661,9 +661,9 @@ function confirmUserRegistration(token) {
             // Asignar el valor de Skin según el valor de Sex
             let Skin = (Sex === 1) ? 26 : 13;
 
-            // Insertar el usuario en la tabla de usuarios confirmados
+            // Insertar el usuario en la tabla de PlayaRP confirmados
             const insertQuery = `
-                INSERT INTO usuarios (
+                INSERT INTO PlayaRP (
                     Name, Mail, Pass, Salt, Sex, Race, MoneyVR, Skin, Level, Eat, Need, Soif, Sleep, Higiene, Diversion, Shame, Enfermedad, Alcohol, X, Y, Z, A, Inventory, Health, Gorod, Bank
                 ) VALUES (
                     ?, ?, ?, ?, ?, ?, ?, ?, 0, 100, 100, 100, 100, 100, 100, 100, 0, 0, ?, ?, ?, ?, ?, ?, ?, ?

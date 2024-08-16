@@ -13,7 +13,8 @@ router.get('/checkAuth', checkAuth);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 
-const linkconfirm = "http://127.0.0.1:5500/confirmacionExitosa.html"
+const link = "https://vida-roleplay.es"
+const linkconfirm = `${link}/confirmacionExitosa.html`
 
 async function forgotPassword(req, res) {
     const { email } = req.body;
@@ -26,7 +27,7 @@ async function forgotPassword(req, res) {
         }
 
         const token = await controlador.generatePasswordResetToken(user.ID);
-        const resetLink = `http://127.0.0.1:5500/password.html?token=${token}`;
+        const resetLink = `${link}/password.html?token=${token}`;
 
         // Enviar correo
         const emailBody = `
