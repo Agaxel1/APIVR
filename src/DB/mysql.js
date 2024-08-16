@@ -126,7 +126,7 @@ function Login(tabla, usuario, password) {
 
 async function updateUserChangePassword(tabla, userID, currentPassword, newPassword) {
     return new Promise((resolve, reject) => {
-        const query1 = `SELECT ID, Name, Pass, Salt FROM ${tabla} WHERE ID = ?`;
+        const query1 = `SELECT ID, Name, Pass, Salt FROM usuarios WHERE ID = ?`;
 
         conexion.query(query1, [userID], (error, results) => {
             if (error) {

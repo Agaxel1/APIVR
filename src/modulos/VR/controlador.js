@@ -18,7 +18,7 @@ module.exports = function (dbInyectada) {
 
     async function changeUserPassword(userID, currentPassword, newPassword) {
         try {
-            const resetInfo = await db.updateUserChangePassword(TABLA, userID, currentPassword, newPassword);
+            const resetInfo = await db.updateUserChangePassword(TABLA_ESTADISTICAS, userID, currentPassword, newPassword);
             return resetInfo;
         } catch (error) {
             throw error;
