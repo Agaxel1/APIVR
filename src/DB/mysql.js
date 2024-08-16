@@ -52,14 +52,17 @@ function findUserByEmail(tabla, email) {
 
 function storePasswordResetToken(userId, expiration) {
     const token = crypto.randomBytes(32).toString('hex');
+    const formattedExpiration = new Date(expiration).toISOString().slice(0, 19).replace('T', ' '); // Formato YYYY-MM-DD HH:MM:SS
+
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO password_resets (user_id, token, expiration) VALUES (?, ?, ?)`;
-        conexion.query(query, [userId, token, expiration], (error) => {
+        conexion.query(query, [userId, token, formattedExpiration], (error) => {
             if (error) return reject(error);
-            resolve(token); // Retorna el token además de resolver el Promise
+            resolve(token);
         });
     });
 }
+
 
 function findResetToken(tabla, token) {
     return new Promise((resolve, reject) => {
@@ -510,7 +513,7 @@ async function registerUser(usuario, password, email, sexo, nacionalidad, raza) 
                 </head>
                 <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
                     <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
-                        <img src="https://i.postimg.cc/Px5Q8nPk/Imagen-de-Whats-App-2024-07-29-a-las-19-07-48-3caaf1fa.jpg" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
+                        <img src="https://i.postimg.cc/k5rg5Z7X/logo.png" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
                         <h1 style="color: #ffffff;">¡Hola ${usuario}!</h1>
                         <p style="color: #c0c0c0; line-height: 1.5;">Gracias por registrarte en Vida Roleplay. Para completar el proceso de registro, por favor confirma tu cuenta haciendo clic en el botón de abajo.</p>
                         <a href="${confirmationLink}" style="display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 14px 28px; font-size: 20px; font-weight: bold; background-color: #0069d9; color: #ffffff; text-decoration: none; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease-in-out;">Confirmar Registro</a>
