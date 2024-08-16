@@ -16,6 +16,15 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
+    async function changeUserPassword(userID, currentPassword, newPassword) {
+        try {
+            const resetInfo = await db.updateUserChangePassword(TABLA, userID, currentPassword, newPassword);
+            return resetInfo;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     // Nueva función para obtener el estado del servidor desde mysql.js
     async function getServerStatus() {
         try {
@@ -135,6 +144,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        changeUserPassword,
         getServerStatus,
         certifyUser,
         getTops,

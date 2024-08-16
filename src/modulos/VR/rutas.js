@@ -15,6 +15,19 @@ router.get('/certification-status', getCertificationStatus);
 router.get('/links', getLinks);
 router.post('/certify', certifyUser);
 router.get('/server-status', statusServer);
+router.post('/change-password', changePassword);
+
+
+async function changePassword(req, res) {
+    const { userID, currentPassword, newPassword } = req.body; // Cambiar de token a resetToken
+
+    try {
+        await controlador.changeUserPassword(userID, currentPassword, newPassword); // Usar resetToken
+        respuestas.success(req, res, 'Contraseña restablecida correctamente.', 200);
+    } catch (err) {
+        respuestas.error(req, res, 'El token es inválido o ha expirado.', 400);
+    }
+}
 
 
 async function statusServer(req, res) {

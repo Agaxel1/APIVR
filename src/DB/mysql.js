@@ -499,14 +499,6 @@ function Login(tabla, usuario, password) {
 async function registerUser(usuario, password, email, sexo, nacionalidad, raza) {
     return new Promise((resolve, reject) => {
 
-        // Imprimir los datos enviados en la consola
-        console.log("Datos enviados:");
-        console.log("Usuario:", usuario);
-        console.log("Contraseña:", password);
-        console.log("Email:", email);
-        console.log("Sexo:", sexo);
-        console.log("Nacionalidad:", nacionalidad);
-        console.log("Raza:", raza);
         // Verificar el formato del correo electrónico
         if (!isValidEmail(email)) {
             return reject(new Error('El correo electrónico ingresado no es válido.'));

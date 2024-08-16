@@ -12,7 +12,6 @@ router.get('/confirm/:token', confirm);
 router.get('/checkAuth', checkAuth);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
-router.post('/change-password', changePassword);
 
 const linkconfirm = "http://127.0.0.1:5500/confirmacionExitosa.html"
 
@@ -74,16 +73,6 @@ async function resetPassword(req, res) {
     }
 }
 
-async function changePassword(req, res) {
-    const { userID, currentPassword, newPassword } = req.body; // Cambiar de token a resetToken
-
-    try {
-        await controlador.changeUserPassword(userID, currentPassword, newPassword); // Usar resetToken
-        respuestas.success(req, res, 'Contraseña restablecida correctamente.', 200);
-    } catch (err) {
-        respuestas.error(req, res, 'El token es inválido o ha expirado.', 400);
-    }
-}
 
 async function login(req, res) {
     const { usuario, password } = req.body;
