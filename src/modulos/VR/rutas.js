@@ -19,15 +19,22 @@ router.post('/change-password', changePassword);
 
 
 async function changePassword(req, res) {
-    const { userID, currentPassword, newPassword } = req.body; // Cambiar de token a resetToken
+    const { userID, currentPassword, newPassword } = req.body;
 
     try {
-        await controlador.changeUserPassword(userID, currentPassword, newPassword); // Usar resetToken
-        respuestas.success(req, res, 'Contraseña restablecida correctamente.', 200);
+        // Verificar que todos los campos estén presentes
+        if (!userID || !currentPassword || !newPassword) {
+            return respuestas.error(req, res, 'Todos los campos son requeridos.', 400);
+        }
+
+        await controlador.changeUserPassword(userID, currentPassword, newPassword);
+        respuestas.success(req, res, 'Contraseña actualizada correctamente.', 200);
     } catch (err) {
-        respuestas.error(req, res, 'El token es inválido o ha expirado.', 400);
+        console.error("Error al cambiar la contraseña en el servidor:", err); // Agregar más información sobre el error
+        respuestas.error(req, res, 'Error al cambiar la contraseña.', 400);
     }
 }
+
 
 
 async function statusServer(req, res) {
