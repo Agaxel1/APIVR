@@ -95,6 +95,77 @@ async function updateUserPassword(userId, newPassword) {
     });
 }
 
+function Login(tabla, usuario, password) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT ID,Name,  Pass, Salt FROM ${tabla} WHERE Name = ?`;
+
+        conexion.query(query, [usuario], (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+
+            if (results.length === 0) {
+                return reject('Usuario no encontrado');
+            }
+
+            const { Pass: hashedPassword, Salt: salt } = results[0];
+
+            // Generar el hash de la contraseña ingresada usando el salt almacenado
+            const hashToCompare = crypto.createHash('sha256').update(password + salt).digest('hex').toLowerCase();
+
+            // Comparar el hash generado con el hash almacenado
+            if (hashToCompare === hashedPassword.toLowerCase()) {
+                resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
+            } else {
+                reject('Contraseña incorrecta');  // Contraseña incorrecta
+            }
+        });
+    });
+}
+
+
+async function updateUserChangePassword(tabla, userID, currentPassword, newPassword) {
+    return new Promise((resolve, reject) => {
+        const query1 = `SELECT ID, Name, Pass, Salt FROM ${tabla} WHERE ID = ?`;
+
+        conexion.query(query1, [userID], (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+
+            if (results.length === 0) {
+                return reject('Usuario no encontrado');
+            }
+
+            const { Pass: hashedPassword, Salt: storedSalt } = results[0];
+
+            // Generar el hash de la contraseña actual usando el salt almacenado
+            const hashToCompare = crypto.createHash('sha256').update(currentPassword + storedSalt).digest('hex').toUpperCase();
+
+            // Comparar el hash generado con el hash almacenado
+            if (hashToCompare !== hashedPassword.toUpperCase()) {
+                return reject('Contraseña incorrecta');
+            }
+
+            // Si la contraseña actual es correcta, generar un nuevo salt y actualizar la contraseña
+            let newSalt = '';
+            for (let i = 0; i < 10; i++) {
+                newSalt += String.fromCharCode(Math.floor(Math.random() * 79) + 47);
+            }
+
+            // Crear el hash de la nueva contraseña
+            const newHashedPassword = crypto.createHash('sha256').update(newPassword + newSalt).digest('hex').toUpperCase();
+
+            // Actualizar la contraseña en la base de datos
+            const query2 = `UPDATE ${tabla} SET Pass = ?, Salt = ? WHERE ID = ?`;
+            conexion.query(query2, [newHashedPassword, newSalt, userID], (error) => {
+                if (error) return reject(error);
+                resolve('Contraseña actualizada correctamente');
+            });
+        });
+    });
+}
+
 function deleteResetToken(token) {
     return new Promise((resolve, reject) => {
         const query = `DELETE FROM password_resets WHERE token = ?`;
@@ -884,6 +955,7 @@ module.exports = {
     storePasswordResetToken,
     findResetToken,
     updateUserPassword,
+    updateUserChangePassword,
     deleteResetToken,
     getServerStatusmysql,
     updateCertificationStatus,
