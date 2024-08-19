@@ -82,18 +82,22 @@ async function deletePost(req, res) {
 async function crearPost(req, res) {
     try {
         const { image_url, ...rest } = req.body;
+        console.log("Recibiendo datos:", { contentLength: req.headers['content-length'], imageSize: image_url ? Buffer.byteLength(image_url, 'base64') : 'No image' });
+
         if (image_url) {
             const imageSizeInBytes = Buffer.byteLength(image_url, 'base64');
-            if (imageSizeInBytes > 10 * 1024 * 1024) { // 10MB límite arbitrario
+            if (imageSizeInBytes > 10 * 1024 * 1024) { // Límite de 10MB
                 return respuestas.error(req, res, "Imagen muy grande", 413);
             }
         }
-        
+
         const post = await controlador.crearPost(req.body);
         respuestas.success(req, res, "Agregado correctamente", 201);
     } catch (err) {
+        console.error("Error al crear el post:", err); // Log para depurar errores
         respuestas.error(req, res, err, 500);
     }
 }
+
 
 module.exports = router;
