@@ -14,8 +14,8 @@ const VR = require('./modulos/VR/rutas');
 const app = express();
 
 app.use(morgan('dev'));
-app.use(bodyParser.json({ limit: '200mb' }));
-app.use(bodyParser.urlencoded({ limit: '200mb', extended: true }));
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 const corsOptions = {
     origin: function (origin, callback) {
