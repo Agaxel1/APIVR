@@ -56,11 +56,11 @@ async function crearPost(req, res) {
         respuestas.success(req, res, "Agregado correctamente", 201);
 
         // Enviar mensaje a Discord
-        const { tipo, skin, user_id, Name, content, creation_date, image_url } = req.body;
+        const { tipo, user_id, content, image_url, Number } = req.body;
         if (image_url == NULL) {
-            await controlador.enviarMensajeDiscord(tipo, skin, user_id, Name, content, creation_date, NULL);
+            await controlador.enviarMensajeDiscord(tipo, user_id, content, NULL, Number);
         } else {
-            await controlador.enviarMensajeDiscord(tipo, skin, user_id, Name, content, creation_date, image_url);
+            await controlador.enviarMensajeDiscord(tipo, user_id, content, image_url, Number);
         }
 
     } catch (err) {

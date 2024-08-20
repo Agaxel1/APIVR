@@ -29,11 +29,11 @@ module.exports = function (dbInyectada) {
         return db.deletePost(TABLA, postId);
     }
 
-    async function enviarMensajeDiscord(tipo, skin, user_id, name, content, creation_date, base64Image) {
+    async function enviarMensajeDiscord(tipo, user_id, content, base64Image, phoneNumber) {
         try {
             await waitForClientReady();
             console.log('Cliente de Discord está listo para enviar mensaje');
-    
+
             // Selecciona el canal adecuado según el tipo
             let channelId;
             if (tipo === "A") {
@@ -44,16 +44,16 @@ module.exports = function (dbInyectada) {
                 throw new Error('Tipo de mensaje no reconocido');
             }
             console.log(`Canal ID utilizado para tipo "${tipo}": ${channelId}`);
-    
+
             const channel = await client.channels.fetch(channelId);
             if (!channel) {
                 throw new Error('Canal no encontrado');
             }
             console.log(`Canal obtenido: ${channel.name}`);
-    
+
             // Crear el embed base
             let embed = new EmbedBuilder().setTimestamp();
-    
+
             if (tipo === "A") {
                 embed
                     .setColor(0x1E90FF) // Un color azul más suave
@@ -62,6 +62,7 @@ module.exports = function (dbInyectada) {
                     .setAuthor({ name: 'Anuncios Importantes', iconURL: 'https://i.postimg.cc/ZRQ9wJXF/anuncio.png' })
                     .addFields(
                         { name: 'ID del Usuario', value: `Usuario#${user_id}`, inline: true },
+                        { name: 'Número de Teléfono', value: phoneNumber ? `📞 ${phoneNumber}` : 'No proporcionado', inline: true }, // Aquí se añade el campo de teléfono
                         { name: 'Contenido', value: content }
                     )
                     .setFooter({ text: '¡Gracias por tu atención!' });
@@ -77,7 +78,7 @@ module.exports = function (dbInyectada) {
                     )
                     .setFooter({ text: 'Mantén la discreción...' });
             }
-    
+
             // Solo añade la imagen si base64Image tiene valor
             let files = [];
             if (base64Image && base64Image.trim() !== '') {
@@ -86,7 +87,7 @@ module.exports = function (dbInyectada) {
                 files.push({ attachment: imageBuffer, name: 'image.png' });
                 embed.setImage('attachment://image.png');
             }
-    
+
             // Envía el embed junto con la imagen, si hay archivos
             await channel.send({ embeds: [embed], files: files });
             console.log('Mensaje enviado a Discord');
@@ -94,6 +95,7 @@ module.exports = function (dbInyectada) {
             console.error('Error al enviar mensaje a Discord:', error);
         }
     }
+
 
     return {
         anuncios,
