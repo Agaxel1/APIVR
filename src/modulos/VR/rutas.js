@@ -16,7 +16,7 @@ router.get('/links', getLinks);
 router.post('/certify', certifyUser);
 router.get('/server-status', statusServer);
 router.post('/change-password', changePassword);
-router.post('/Questions', Questions);
+router.get('/Questions', Questions);
 
 
 async function Questions(req, res) {
