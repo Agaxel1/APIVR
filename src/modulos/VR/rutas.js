@@ -16,6 +16,20 @@ router.get('/links', getLinks);
 router.post('/certify', certifyUser);
 router.get('/server-status', statusServer);
 router.post('/change-password', changePassword);
+router.post('/Questions', Questions);
+
+
+async function Questions(req, res) {
+    const { type } = req.query;
+
+    try {
+        const questions = await controlador.getQuestions(type);
+        respuestas.success(req, res, questions, 200);
+    } catch (error) {
+        console.error('Error al obtener preguntas:', error);
+        respuestas.error(req, res, 'Error al obtener preguntas', 500);
+    }
+}
 
 
 async function changePassword(req, res) {

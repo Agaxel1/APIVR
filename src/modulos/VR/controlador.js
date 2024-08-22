@@ -16,6 +16,17 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
+
+    async function getQuestions(type) {
+        try {
+            // Llama a la función correspondiente en mysql.js
+            const questions = await db.getQuestions(type);
+            return questions;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async function changeUserPassword(userID, currentPassword, newPassword) {
         try {
             const resetInfo = await db.updateUserChangePassword(TABLA_ESTADISTICAS, userID, currentPassword, newPassword);
@@ -144,6 +155,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        getQuestions,
         changeUserPassword,
         getServerStatus,
         certifyUser,

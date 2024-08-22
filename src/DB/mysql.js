@@ -37,6 +37,26 @@ function conmysql() {
 
 conmysql();
 
+function getQuestions(type) {
+    return new Promise((resolve, reject) => {
+        let query = "SELECT id, question, option1, option2, option3, option4, correct FROM Questions";
+        let params = [];
+
+        if (type) {
+            query += " WHERE type = ?";
+            params.push(type);
+        }
+
+        conexion.query(query, params, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+
 /*****Contraseña olvidada*****/
 
 function findUserByEmail(tabla, email) {
