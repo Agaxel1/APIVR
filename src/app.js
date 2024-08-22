@@ -3,7 +3,6 @@ const morgan = require('morgan');
 const config = require('./config');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
 
 const posts = require('./modulos/posts/rutas');
 const anuncios = require('./modulos/anuncios/rutas');
