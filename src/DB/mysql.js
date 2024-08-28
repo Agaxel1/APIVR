@@ -61,7 +61,7 @@ function getQuestions(type) {
 
 function findUserByEmail(tabla, email) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT ID, Name FROM PlayaRP WHERE Mail = ?`;
+        const query = `SELECT ID, Name, Warn FROM ${tabla} WHERE Mail = ?`;
         conexion.query(query, [email], (error, results) => {
             if (error) return reject(error);
             if (results.length === 0) return resolve(null);
@@ -69,6 +69,7 @@ function findUserByEmail(tabla, email) {
         });
     });
 }
+
 
 function storePasswordResetToken(userId, expiration) {
     const token = crypto.randomBytes(32).toString('hex');

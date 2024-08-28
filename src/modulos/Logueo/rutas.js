@@ -26,6 +26,45 @@ async function forgotPassword(req, res) {
             return respuestas.success(req, res, 'Si existe una cuenta con este correo, recibirás un enlace para restablecer tu contraseña.', 200);
         }
 
+        if (user.Warn > 4) {
+            const banEmailBody = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Baneada</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #1e1e1e; color: #e0e0e0;">
+    <div style="max-width: 600px; margin: 40px auto; background: #2b2b2b; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-align: center;">
+        <img src="https://i.postimg.cc/k5rg5Z7X/logo.png" alt="Vida Roleplay" style="max-width: 150px; margin-bottom: 20px;">
+        <h1 style="color: #ffffff;">Hola ${user.Name},</h1>
+        <p style="color: #c0c0c0; line-height: 1.5;">
+            Tu cuenta está baneada, por lo que no será posible restablecer la contraseña. 
+            Si crees que esto es un error, por favor contacta con el soporte a través del siguiente enlace:
+        </p>
+        <p style="color: #c0c0c0;">
+            <a href="https://discord.com/invite/vida-rol-929898747155054683" style="color: #0069d9; text-decoration: none;">
+                Ir al Discord de Vida Roleplay
+            </a>
+        </p>
+        <div style="font-size: 12px; color: #888888; margin-top: 20px;">
+            <p>&copy; 2024 Vida Roleplay. Todos los derechos reservados.</p>
+            <p>
+                <img src="https://i.postimg.cc/XJ1cf1CB/email.png" alt="Email Icon" style="width: 24px; vertical-align: middle; margin-right: 8px;">
+                Si tienes problemas, contacta con soporte.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+`;
+
+
+            await controlador.sendMail(email, banEmailBody);
+            return respuestas.success(req, res, 'Tu cuenta está baneada. Se ha enviado un correo con más información.', 200);
+        }
+
         const token = await controlador.generatePasswordResetToken(user.ID);
         const resetLink = `${link}/password.html?token=${token}`;
 
