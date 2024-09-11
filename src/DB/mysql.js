@@ -37,6 +37,43 @@ function conmysql() {
 
 conmysql();
 
+async function SendHistoryAprove(tabla, userId, historia) {
+    return new Promise((resolve, reject) => {
+
+        // Consulta para verificar si ya existe una historia pendiente para el userId
+        let query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
+        let params = [userId];
+
+        conexion.query(query, params, (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+
+            if (results.length > 0) {
+                // Si ya existe, devolver un mensaje indicando que debe esperar la aprobación
+                resolve('Ya has enviado tu historia. Debes esperar a que se apruebe o rechace.');
+            } else {
+                // Si no existe, realizar el INSERT con la fecha actual
+                const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' '); // Formato YYYY-MM-DD HH:MM:SS
+
+                query = `INSERT INTO ${tabla} (Owner, historia, fecha) VALUES (?, ?, ?)`;
+                params = [userId, historia, fechaActual];
+
+                conexion.query(query, params, (insertError) => {
+                    if (insertError) {
+                        return reject(insertError);
+                    }
+
+                    // Si el INSERT es exitoso
+                    resolve('Tu historia ha sido enviada y está en revisión.');
+                });
+            }
+        });
+    });
+}
+
+
+
 function getQuestions(type) {
     return new Promise((resolve, reject) => {
         let query = "SELECT id, question, option1, option2, option3, option4, correct FROM Questions";
@@ -963,6 +1000,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    SendHistoryAprove,
     getQuestions,
     sendMail,
     findUserByEmail,

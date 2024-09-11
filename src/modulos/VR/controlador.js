@@ -1,4 +1,5 @@
 const TABLA_ESTADISTICAS = 'PlayaRP';
+const TABLA_HISTORIA = 'HistoriaPendiente';
 const TABLA_AUTOS = 'Car';
 const TABLA_NEGOCIOS = {
     GlobalInfo: 'global',
@@ -16,6 +17,15 @@ module.exports = function (dbInyectada) {
         db = require('../../DB/mysql');
     }
 
+
+    async function saveHistory(userID, historia) {
+        try {
+            const resetInfo = await db.SendHistoryAprove(TABLA_ESTADISTICAS, userID, historia);
+            return resetInfo;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     async function getQuestions(type) {
         try {
@@ -155,6 +165,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        saveHistory,
         getQuestions,
         changeUserPassword,
         getServerStatus,
