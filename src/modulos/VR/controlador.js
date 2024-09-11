@@ -20,7 +20,7 @@ module.exports = function (dbInyectada) {
 
     async function saveHistory(userID, historia) {
         try {
-            const resetInfo = await db.SendHistoryAprove(TABLA_ESTADISTICAS, userID, historia);
+            const resetInfo = await db.SendHistoryAprove(TABLA_HISTORIA, userID, historia);
             return resetInfo;
         } catch (error) {
             throw error;
