@@ -51,7 +51,13 @@ async function SendHistoryAprove(tabla, userId, historia) {
 
             if (results.length > 0) {
                 // Si ya existe, devolver un mensaje indicando que debe esperar la aprobación
-                console.log(Date.now())
+                const ahora = new Date(Date.now());
+
+                // Formatear la fecha y hora en el formato deseado
+                const formatoFecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
+
+                // Mostrar la fecha y hora en la consola
+                console.log(formatoFecha);
                 resolve('Ya has enviado tu historia. Debes esperar a que se apruebe o rechace.');
             } else {
                 // Si no existe, realizar el INSERT con la fecha actual
