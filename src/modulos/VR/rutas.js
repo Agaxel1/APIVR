@@ -22,7 +22,6 @@ router.post('/save-historia', saveHistoria);
 
 async function saveHistoria(req, res) {
     const { userID, historia } = req.body;
-    console.log(req.body);
     try {
         // Verificar que todos los campos estén presentes
         if (!userID || !historia) {
