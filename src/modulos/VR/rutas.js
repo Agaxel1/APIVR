@@ -20,6 +20,8 @@ router.get('/Questions', Questions);
 router.post('/save-historia', saveHistoria);
 
 
+router.post('/save-historia', saveHistoria);
+
 async function saveHistoria(req, res) {
     const { userID, historia } = req.body;
     try {
@@ -28,13 +30,14 @@ async function saveHistoria(req, res) {
             return respuestas.error(req, res, 'Todos los campos son requeridos.', 400);
         }
 
-        await controlador.saveHistory(userID, historia);
-        respuestas.success(req, res, 'Historia actualizada correctamente.', 200);
+        const result = await controlador.saveHistory(userID, historia);
+        respuestas.success(req, res, result, 200); // Enviar el mensaje del controlador
     } catch (err) {
         console.error("Error al actualizar la historia:", err); // Agregar más información sobre el error
-        respuestas.error(req, res, 'Error al actualizar la historia.', 400);
+        respuestas.error(req, res, 'Error al actualizar la historia.', 500); // Cambiado el código de error a 500
     }
 }
+
 
 async function Questions(req, res) {
     const { type } = req.query;

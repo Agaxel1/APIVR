@@ -20,12 +20,13 @@ module.exports = function (dbInyectada) {
 
     async function saveHistory(userID, historia) {
         try {
-            const resetInfo = await db.SendHistoryAprove(TABLA_HISTORIA, userID, historia);
-            return resetInfo;
+            const result = await db.SendHistoryAprove(TABLA_HISTORIA, userID, historia);
+            return result; // Retorna el mensaje de la base de datos
         } catch (error) {
             throw error;
         }
     }
+
 
     async function getQuestions(type) {
         try {

@@ -39,48 +39,37 @@ conmysql();
 
 async function SendHistoryAprove(tabla, userId, historia) {
     return new Promise((resolve, reject) => {
-
-        // Consulta para verificar si ya existe una historia pendiente para el userId
-        let query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
+        // Verificar si ya existe una historia pendiente para el userId
+        let query = `SELECT * FROM ${tabla} WHERE Owner = ? AND estado = 'pendiente'`;
         let params = [userId];
 
         conexion.query(query, params, (error, results) => {
             if (error) {
-                return reject(error);
+                return reject({ success: false, message: 'Error al verificar la historia.' });
             }
 
             if (results.length > 0) {
-                // Obtener la fecha y hora actual
-                const ahora = new Date(Date.now());
-
-                // Restar 5 horas
-                ahora.setHours(ahora.getHours() - 5);
-
-                // Formatear la fecha y hora en el formato deseado
-                const formatoFecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
-
-                // Mostrar la fecha y hora en la consola
-                console.log(formatoFecha);
+                // Ya existe una historia pendiente
                 resolve('Ya has enviado tu historia. Debes esperar a que se apruebe o rechace.');
             } else {
-                // Si no existe, realizar el INSERT con la fecha actual
-                const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' '); // Formato YYYY-MM-DD HH:MM:SS
+                // Insertar la nueva historia
+                const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-                query = `INSERT INTO ${tabla} (Owner, historia, fecha) VALUES (?, ?, ?)`;
+                query = `INSERT INTO ${tabla} (Owner, historia, fecha, estado) VALUES (?, ?, ?, 'pendiente')`;
                 params = [userId, historia, fechaActual];
 
                 conexion.query(query, params, (insertError) => {
                     if (insertError) {
-                        return reject(insertError);
+                        return reject({ success: false, message: 'Error al enviar la historia. Intenta de nuevo más tarde.' });
                     }
 
-                    // Si el INSERT es exitoso
                     resolve('Tu historia ha sido enviada y está en revisión.');
                 });
             }
         });
     });
 }
+
 
 
 
