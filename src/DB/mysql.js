@@ -50,8 +50,11 @@ async function SendHistoryAprove(tabla, userId, historia) {
             }
 
             if (results.length > 0) {
-                // Si ya existe, devolver un mensaje indicando que debe esperar la aprobación
+                // Obtener la fecha y hora actual
                 const ahora = new Date(Date.now());
+
+                // Restar 5 horas
+                ahora.setHours(ahora.getHours() - 5);
 
                 // Formatear la fecha y hora en el formato deseado
                 const formatoFecha = ahora.toISOString().slice(0, 19).replace('T', ' ');
