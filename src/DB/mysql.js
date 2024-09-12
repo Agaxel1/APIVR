@@ -40,7 +40,7 @@ conmysql();
 async function SendHistoryAprove(tabla, userId, historia) {
     return new Promise((resolve, reject) => {
         // Verificar si ya existe una historia pendiente para el userId
-        let query = `SELECT * FROM ${tabla} WHERE Owner = ? AND estado = 'pendiente'`;
+        let query = `SELECT * FROM ${tabla} WHERE Owner = ?`;
         let params = [userId];
 
         conexion.query(query, params, (error, results) => {
