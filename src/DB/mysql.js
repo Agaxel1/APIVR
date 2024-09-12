@@ -37,6 +37,20 @@ function conmysql() {
 
 conmysql();
 
+function getHistorias(tabla) {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT Owner, Historia FROM ${tabla} ORDER BY fecha DESC`;
+        let params = [];
+
+        conexion.query(query, params, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
 async function SendHistoryAprove(tabla, userId, historia) {
     return new Promise((resolve, reject) => {
         // Verificar si ya existe una historia pendiente para el userId
@@ -978,6 +992,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    getHistorias,
     SendHistoryAprove,
     getQuestions,
     sendMail,

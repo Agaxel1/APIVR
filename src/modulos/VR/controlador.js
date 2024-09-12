@@ -18,6 +18,16 @@ module.exports = function (dbInyectada) {
     }
 
 
+    async function getHistorias() {
+        try {
+            // Llama a la función correspondiente en mysql.js
+            const historias = await db.getHistorias(TABLA_HISTORIA);
+            return historias;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async function saveHistory(userID, historia) {
         try {
             const result = await db.SendHistoryAprove(TABLA_HISTORIA, userID, historia);
@@ -166,6 +176,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        getHistorias,
         saveHistory,
         getQuestions,
         changeUserPassword,

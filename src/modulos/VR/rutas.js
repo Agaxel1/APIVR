@@ -17,10 +17,21 @@ router.post('/certify', certifyUser);
 router.get('/server-status', statusServer);
 router.post('/change-password', changePassword);
 router.get('/Questions', Questions);
+router.get('/historias', Historias);
+router.post('/save-historia', saveHistoria);
 router.post('/save-historia', saveHistoria);
 
 
-router.post('/save-historia', saveHistoria);
+async function Historias(req, res) {
+
+    try {
+        const historias = await controlador.getHistorias();
+        respuestas.success(req, res, historias, 200);
+    } catch (error) {
+        console.error('Error al obtener historias:', error);
+        respuestas.error(req, res, 'Error al obtener historias', 500);
+    }
+}
 
 async function saveHistoria(req, res) {
     const { userID, historia } = req.body;
