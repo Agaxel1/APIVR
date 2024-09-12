@@ -159,34 +159,6 @@ async function updateUserPassword(userId, newPassword) {
     });
 }
 
-function Login(tabla, usuario, password) {
-    return new Promise((resolve, reject) => {
-        const query = `SELECT ID,Name,  Pass, Salt FROM ${tabla} WHERE Name = ?`;
-
-        conexion.query(query, [usuario], (error, results) => {
-            if (error) {
-                return reject(error);
-            }
-
-            if (results.length === 0) {
-                return reject('Usuario no encontrado');
-            }
-
-            const { Pass: hashedPassword, Salt: salt } = results[0];
-
-            // Generar el hash de la contraseña ingresada usando el salt almacenado
-            const hashToCompare = crypto.createHash('sha256').update(password + salt).digest('hex').toLowerCase();
-
-            // Comparar el hash generado con el hash almacenado
-            if (hashToCompare === hashedPassword.toLowerCase()) {
-                resolve(results[0]);  // Contraseña correcta, devuelve los datos del usuario
-            } else {
-                reject('Contraseña incorrecta');  // Contraseña incorrecta
-            }
-        });
-    });
-}
-
 
 async function updateUserChangePassword(tabla, userID, currentPassword, newPassword) {
     return new Promise((resolve, reject) => {
@@ -534,7 +506,7 @@ async function sendMail(recipientEmail, body) {
 
 function Login(tabla, usuario, password) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT ID,Name,  Pass, Salt FROM ${tabla} WHERE Name = ?`;
+        const query = `SELECT ID,Name, Admin,  Pass, Salt FROM ${tabla} WHERE Name = ?`;
 
         conexion.query(query, [usuario], (error, results) => {
             if (error) {

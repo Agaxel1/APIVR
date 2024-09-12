@@ -43,7 +43,7 @@ module.exports = function (dbInyectada) {
     }
 
 
-    async function Login(req, usuario, password) {
+    async function Login(usuario, password) {
         try {
             const user = await db.Login(TABLA, usuario, password);
             return user;
