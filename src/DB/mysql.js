@@ -45,7 +45,7 @@ async function SendHistoryAprove(tabla, userId, historia) {
 
         conexion.query(query, params, (error, results) => {
             if (error) {
-                return reject({ success: false, message: 'Error al verificar la historia.' });
+                return reject('Error al verificar la historia.');
             }
 
             if (results.length > 0) {
@@ -67,7 +67,7 @@ async function SendHistoryAprove(tabla, userId, historia) {
 
                 conexion.query(query, params, (insertError) => {
                     if (insertError) {
-                        return reject({ success: false, message: 'Error al enviar la historia. Intenta de nuevo más tarde.' });
+                        return reject('Error al enviar la historia. Intenta de nuevo más tarde.');
                     }
 
                     resolve('Tu historia ha sido enviada y está en revisión.');
