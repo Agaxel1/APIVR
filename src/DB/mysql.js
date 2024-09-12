@@ -37,6 +37,73 @@ function conmysql() {
 
 conmysql();
 
+function getHistoriaDetalles(tabla, id) {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT Owner, Historia, fecha FROM ${tabla} WHERE ID = ?`;
+        const params = [id];
+
+        conexion.query(query, params, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(results[0]); // Debe devolver un solo registro
+        });
+    });
+}
+
+async function decisionHistoria(playa, historia, id, decision) {
+    return new Promise((resolve, reject) => {
+        if (decision !== 'aprobar' && decision !== 'rechazar') {
+            return reject(new Error('Decisión no válida.'));
+        }
+
+        // Primero, obtener los detalles de la historia
+        const getHistoriaQuery = `SELECT ID, Owner, Historia FROM ${historia} WHERE ID = ?`;
+        conexion.query(getHistoriaQuery, [id], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            if (results.length === 0) {
+                return reject(new Error('Historia no encontrada.'));
+            }
+
+            const historia = results[0];
+
+            if (decision === 'aprobar') {
+                // Si se aprueba, mover los datos a la tabla PlayaRP y eliminar el registro de TABLA_HISTORIA
+                const insertPlayaRPQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
+                conexion.query(insertPlayaRPQuery, [historia.Historia, historia.Owner], (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    // Eliminar el registro de TABLA_HISTORIA
+                    const deleteHistoriaQuery = `DELETE FROM ${historia} WHERE ID = ?`;
+                    conexion.query(deleteHistoriaQuery, [id], (err) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        resolve({ message: 'Historia aprobada y movida a PlayaRP.' });
+                    });
+                });
+            } else if (decision === 'rechazar') {
+                // Si se rechaza, solo eliminar el registro de TABLA_HISTORIA
+                const deleteHistoriaQuery = `DELETE FROM ${historia} WHERE ID = ?`;
+                conexion.query(deleteHistoriaQuery, [id], (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve({ message: 'Historia rechazada.' });
+                });
+            }
+        });
+    });
+}
+
+
+
+
 function getHistorias(tabla) {
     return new Promise((resolve, reject) => {
         let query = `SELECT Owner, Historia, fecha FROM ${tabla} ORDER BY fecha DESC`;
@@ -992,6 +1059,8 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    decisionHistoria,
+    getHistoriaDetalles,
     getHistorias,
     SendHistoryAprove,
     getQuestions,

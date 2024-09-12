@@ -18,6 +18,25 @@ module.exports = function (dbInyectada) {
     }
 
 
+    async function getHistoriaDetalles(id) {
+        try {
+            const historia = await db.getHistoriaDetalles(TABLA_HISTORIA, id);
+            return historia;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async function decisionHistoria(id, decision) {
+        try {
+            const result = await db.decisionHistoria(TABLA_ESTADISTICAS, TABLA_HISTORIA, id, decision);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
     async function getHistorias() {
         try {
             // Llama a la función correspondiente en mysql.js
@@ -176,6 +195,8 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        decisionHistoria,
+        getHistoriaDetalles,
         getHistorias,
         saveHistory,
         getQuestions,

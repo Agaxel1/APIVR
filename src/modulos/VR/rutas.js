@@ -19,7 +19,37 @@ router.post('/change-password', changePassword);
 router.get('/Questions', Questions);
 router.get('/historias', Historias);
 router.post('/save-historia', saveHistoria);
-router.post('/save-historia', saveHistoria);
+router.get('/historias/:id', getHistoriaDetalles);
+router.post('/historias/:id/decidir', decidirHistoria);
+
+// Obtener detalles de una historia
+async function getHistoriaDetalles(req, res) {
+    const { id } = req.params;
+    try {
+        const historia = await controlador.getHistoriaDetalles(id);
+        respuestas.success(req, res, historia, 200);
+    } catch (error) {
+        console.error('Error al obtener detalles de la historia:', error);
+        respuestas.error(req, res, 'Error al obtener detalles de la historia', 500);
+    }
+}
+
+// Aprobar o rechazar una historia
+async function decidirHistoria(req, res) {
+    const { id } = req.params;
+    const { decision } = req.body; // `decision` debe ser 'aprobar' o 'rechazar'
+    try {
+        if (!decision || (decision !== 'aprobar' && decision !== 'rechazar')) {
+            return respuestas.error(req, res, 'Decisión no válida.', 400);
+        }
+
+        const result = await controlador.decisionHistoria(id, decision);
+        respuestas.success(req, res, result, 200);
+    } catch (err) {
+        console.error('Error al procesar la decisión de la historia:', err);
+        respuestas.error(req, res, 'Error al procesar la decisión de la historia.', 500);
+    }
+}
 
 
 async function Historias(req, res) {
