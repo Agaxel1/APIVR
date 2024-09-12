@@ -52,10 +52,17 @@ async function SendHistoryAprove(tabla, userId, historia) {
                 // Ya existe una historia pendiente
                 resolve('Ya has enviado tu historia. Debes esperar a que se apruebe o rechace.');
             } else {
-                // Insertar la nueva historia
-                const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                // Obtener la fecha y hora actual
+                let fechaActual = new Date();
 
-                query = `INSERT INTO ${tabla} (Owner, historia, fecha, estado) VALUES (?, ?, ?, 'pendiente')`;
+                // Restar 5 horas
+                fechaActual.setHours(fechaActual.getHours() - 5);
+
+                // Formatear la fecha en el formato YYYY-MM-DD HH:MM:SS
+                fechaActual = fechaActual.toISOString().slice(0, 19).replace('T', ' ');
+
+                // Insertar la nueva historia
+                query = `INSERT INTO ${tabla} (Owner, Historia, fecha) VALUES (?, ?, ?)`;
                 params = [userId, historia, fechaActual];
 
                 conexion.query(query, params, (insertError) => {
