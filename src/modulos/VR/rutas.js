@@ -20,7 +20,7 @@ router.get('/Questions', Questions);
 router.get('/historias', Historias);
 router.post('/save-historia', saveHistoria);
 router.get('/historias/:id', getHistoriaDetalles);
-router.post('/historias/:id/decidir', decidirHistoria);
+router.post('/save-historia-user', decidirHistoria);
 
 // Obtener detalles de una historia
 async function getHistoriaDetalles(req, res) {
@@ -36,14 +36,13 @@ async function getHistoriaDetalles(req, res) {
 
 // Aprobar o rechazar una historia
 async function decidirHistoria(req, res) {
-    const { id } = req.params;
-    const { decision } = req.body; // `decision` debe ser 'aprobar' o 'rechazar'
+    const { historiaID, decision } = req.body;
     try {
         if (!decision || (decision !== 'aprobar' && decision !== 'rechazar')) {
             return respuestas.error(req, res, 'Decisión no válida.', 400);
         }
 
-        const result = await controlador.decisionHistoria(id, decision);
+        const result = await controlador.decisionHistoria(historiaID, decision);
         respuestas.success(req, res, result, 200);
     } catch (err) {
         console.error('Error al procesar la decisión de la historia:', err);
