@@ -106,7 +106,7 @@ async function decisionHistoria(playa, historia, id, decision) {
 
 function getHistorias(tabla) {
     return new Promise((resolve, reject) => {
-        let query = `SELECT Owner, Historia, fecha FROM ${tabla} ORDER BY fecha DESC`;
+        let query = `SELECT ID, Owner, Historia, fecha FROM ${tabla} ORDER BY fecha DESC`;
         let params = [];
 
         conexion.query(query, params, (err, results) => {
