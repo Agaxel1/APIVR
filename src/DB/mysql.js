@@ -51,14 +51,14 @@ function getHistoriaDetalles(tabla, id) {
     });
 }
 
-async function decisionHistoria(playa, historia, id, decision) {
+async function decisionHistoria(playa, tablaHistoria, id, decision) {
     return new Promise((resolve, reject) => {
         if (decision !== 'aprobar' && decision !== 'rechazar') {
             return reject(new Error('Decisión no válida.'));
         }
 
         // Primero, obtener los detalles de la historia
-        const getHistoriaQuery = `SELECT ID, Owner, Historia FROM ${historia} WHERE ID = ?`;
+        const getHistoriaQuery = `SELECT ID, Owner, Historia FROM ${tablaHistoria} WHERE ID = ?`;
         conexion.query(getHistoriaQuery, [id], (err, results) => {
             if (err) {
                 return reject(err);
@@ -79,7 +79,7 @@ async function decisionHistoria(playa, historia, id, decision) {
                     }
 
                     // Eliminar el registro de TABLA_HISTORIA
-                    const deleteHistoriaQuery = `DELETE FROM ${historia} WHERE ID = ?`;
+                    const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
                     conexion.query(deleteHistoriaQuery, [id], (err) => {
                         if (err) {
                             return reject(err);
@@ -89,7 +89,7 @@ async function decisionHistoria(playa, historia, id, decision) {
                 });
             } else if (decision === 'rechazar') {
                 // Si se rechaza, solo eliminar el registro de TABLA_HISTORIA
-                const deleteHistoriaQuery = `DELETE FROM ${historia} WHERE ID = ?`;
+                const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
                 conexion.query(deleteHistoriaQuery, [id], (err) => {
                     if (err) {
                         return reject(err);
