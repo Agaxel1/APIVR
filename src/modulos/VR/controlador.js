@@ -18,6 +18,15 @@ module.exports = function (dbInyectada) {
     }
 
 
+    async function changeUserName(userID, newCharacterName) {
+        try {
+            const resetInfo = await db.updateUserChangeName(TABLA_ESTADISTICAS, userID, newCharacterName);
+            return resetInfo;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async function getHistoriaDetalles(id) {
         try {
             const historia = await db.getHistoriaDetalles(TABLA_HISTORIA, id);
@@ -195,6 +204,7 @@ module.exports = function (dbInyectada) {
     }
 
     return {
+        changeUserName,
         decisionHistoria,
         getHistoriaDetalles,
         getHistorias,

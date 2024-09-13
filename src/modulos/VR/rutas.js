@@ -21,6 +21,26 @@ router.get('/historias', Historias);
 router.post('/save-historia', saveHistoria);
 router.get('/historias/:id', getHistoriaDetalles);
 router.post('/save-historia-user', decidirHistoria);
+router.post('/change-character-name', changeName);
+
+
+async function changeName(req, res) {
+    const { userID, newCharacterName } = req.body;
+
+    try {
+        // Verificar que todos los campos estén presentes
+        if (!userID || !newCharacterName) {
+            return respuestas.error(req, res, 'Todos los campos son requeridos.', 400);
+        }
+
+        const nombre = await controlador.changeUserName(userID, newCharacterName);
+        respuestas.success(req, res, nombre, 200);
+    } catch (err) {
+        console.error("Error al cambiar la contraseña en el servidor:", err); // Agregar más información sobre el error
+        respuestas.error(req, res, 'Error al cambiar la contraseña.', 400);
+    }
+}
+
 
 // Obtener detalles de una historia
 async function getHistoriaDetalles(req, res) {

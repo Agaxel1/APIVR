@@ -37,6 +37,58 @@ function conmysql() {
 
 conmysql();
 
+async function updateUserChangeName(tabla, userID, newCharacterName) {
+    return new Promise((resolve, reject) => {
+        // Verificar si el nombre ya existe
+        const checkNameQuery = `SELECT COUNT(*) AS count FROM ${tabla} WHERE Name = ?`;
+        const checkNameParams = [newCharacterName];
+
+        conexion.query(checkNameQuery, checkNameParams, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+
+            const nameExists = results[0].count > 0;
+            if (nameExists) {
+                return resolve("El nombre ya existe. Elija otro.");
+            }
+
+            // Obtener detalles del usuario
+            const getUserDetailsQuery = `SELECT Online, Crystal FROM ${tabla} WHERE ID = ?`;
+            const getUserDetailsParams = [userID];
+
+            conexion.query(getUserDetailsQuery, getUserDetailsParams, (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                const user = results[0];
+                if (user.Online === 1) {
+                    return resolve("No se puede cambiar el nombre mientras estás conectado al servidor.\nDesconectate /quit");
+                }
+
+                const newCrystalAmount = user.Crystal - 50;
+                if (newCrystalAmount < 0) {
+                    return resolve("No tienes suficientes Coins para cambiar el nombre.");
+                }
+
+                // Actualizar el nombre y ajustar los créditos de Crystal
+                const updateQuery = `UPDATE ${tabla} SET Name = ?, Crystal = Crystal - 50, historia = NULL, permisoName = 0 WHERE ID = ?`;
+                const updateParams = [newCharacterName, userID];
+
+                conexion.query(updateQuery, updateParams, (err, results) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve("Nombre del personaje actualizado correctamente.");
+                });
+            });
+        });
+    });
+}
+
+
+
 function getHistoriaDetalles(tabla, id) {
     return new Promise((resolve, reject) => {
         const query = `SELECT Owner, Historia, fecha FROM ${tabla} WHERE ID = ?`;
@@ -274,7 +326,7 @@ async function updateUserChangePassword(tabla, userID, currentPassword, newPassw
             const newHashedPassword = crypto.createHash('sha256').update(newPassword + newSalt).digest('hex').toUpperCase();
 
             // Actualizar la contraseña en la base de datos
-            const query2 = `UPDATE PlayaRP SET Pass = ?, Salt = ? WHERE ID = ?`;
+            const query2 = `UPDATE ${tabla} SET Pass = ?, Salt = ? WHERE ID = ?`;
             conexion.query(query2, [newHashedPassword, newSalt, userID], (error) => {
                 if (error) return reject(error);
                 resolve('Contraseña actualizada correctamente');
@@ -1059,6 +1111,7 @@ function Trabajos(tabla, tipo = "TI", tipo2 = "TL") {
 }
 
 module.exports = {
+    updateUserChangeName,
     decisionHistoria,
     getHistoriaDetalles,
     getHistorias,
