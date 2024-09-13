@@ -54,7 +54,7 @@ async function updateUserChangeName(tabla, userID, newCharacterName) {
             }
 
             // Obtener detalles del usuario
-            const getUserDetailsQuery = `SELECT Online, Crystal FROM ${tabla} WHERE ID = ?`;
+            const getUserDetailsQuery = `SELECT Name, Online, Crystal FROM ${tabla} WHERE ID = ?`;
             const getUserDetailsParams = [userID];
 
             conexion.query(getUserDetailsQuery, getUserDetailsParams, (err, results) => {
@@ -64,28 +64,40 @@ async function updateUserChangeName(tabla, userID, newCharacterName) {
 
                 const user = results[0];
                 if (user.Online === 1) {
-                    return resolve("No se puede cambiar el nombre mientras estás conectado al servidor.\nDesconectate /quit");
+                    return resolve("No se puede cambiar el nombre mientras estás conectado al servidor.\nDesconéctate /quit");
                 }
 
-                const newCrystalAmount = user.Crystal - 50;
+                const newCrystalAmount = user.Crystal - 100;
                 if (newCrystalAmount < 0) {
                     return resolve("No tienes suficientes Coins para cambiar el nombre.");
                 }
 
                 // Actualizar el nombre y ajustar los créditos de Crystal
-                const updateQuery = `UPDATE ${tabla} SET Name = ?, Crystal = Crystal - 50, historia = NULL, permisoName = 0 WHERE ID = ?`;
+                const updateQuery = `UPDATE ${tabla} SET Name = ?, Crystal = Crystal - 100, historia = NULL, permisoName = 0 WHERE ID = ?`;
                 const updateParams = [newCharacterName, userID];
 
                 conexion.query(updateQuery, updateParams, (err, results) => {
                     if (err) {
                         return reject(err);
                     }
-                    resolve("Nombre del personaje actualizado correctamente.");
+
+                    // Eliminar el registro en la tabla Antecedentes
+                    const deleteAntecedentesQuery = `DELETE FROM Antecedentes WHERE Name = ?`;
+                    const deleteAntecedentesParams = [user.Name];
+
+                    conexion.query(deleteAntecedentesQuery, deleteAntecedentesParams, (err, results) => {
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve("Nombre del personaje actualizado correctamente.");
+                    });
                 });
             });
         });
     });
 }
+
 
 
 
