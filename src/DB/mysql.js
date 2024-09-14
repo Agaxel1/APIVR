@@ -42,6 +42,7 @@ async function updateUserChangeName(tabla, userID, newCharacterName) {
         // Verificar si el nombre ya existe
         const checkNameQuery = `SELECT COUNT(*) AS count FROM ${tabla} WHERE Name = ?`;
         const checkNameParams = [newCharacterName];
+        const PrecioNombre = 100;
 
         conexion.query(checkNameQuery, checkNameParams, (err, results) => {
             if (err) {
@@ -67,13 +68,13 @@ async function updateUserChangeName(tabla, userID, newCharacterName) {
                     return resolve("No se puede cambiar el nombre mientras estás conectado al servidor.\nDesconéctate /quit");
                 }
 
-                const newCrystalAmount = user.Crystal - 100;
+                const newCrystalAmount = user.Crystal - PrecioNombre;
                 if (newCrystalAmount < 0) {
                     return resolve("No tienes suficientes Coins para cambiar el nombre.");
                 }
 
                 // Actualizar el nombre y ajustar los créditos de Crystal
-                const updateQuery = `UPDATE ${tabla} SET Name = ?, Crystal = Crystal - 100, historia = NULL, permisoName = 0 WHERE ID = ?`;
+                const updateQuery = `UPDATE ${tabla} SET Name = ?, Crystal = Crystal - ${PrecioNombre}, historia = NULL, permisoName = 0 WHERE ID = ?`;
                 const updateParams = [newCharacterName, userID];
 
                 conexion.query(updateQuery, updateParams, (err, results) => {
