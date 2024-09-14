@@ -82,7 +82,6 @@ async function deletePost(req, res) {
 async function crearPost(req, res) {
     try {
         const { image_url, ...rest } = req.body;
-        console.log("Recibiendo datos:", { contentLength: req.headers['content-length'], imageSize: image_url ? Buffer.byteLength(image_url, 'base64') : 'No image' });
 
         if (image_url) {
             const imageSizeInBytes = Buffer.byteLength(image_url, 'base64');
