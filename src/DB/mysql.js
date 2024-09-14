@@ -3,8 +3,6 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const config = require('../config');
 const sampQuery = require('samp-query');
-const { client, waitForClientReady } = require('../discordClient'); // Ajusta la ruta según tu estructura
-const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID_PUNTOS; // Asegúrate de que este ID sea el correcto
 
 const dbconfig = {
     host: config.mysql.host,
@@ -38,30 +36,6 @@ function conmysql() {
 }
 
 conmysql();
-
-async function enviarMensajeDiscord(name, puntos) {
-    try {
-        await waitForClientReady();
-        console.log('Cliente de Discord está listo para enviar mensaje');
-
-        // Selecciona el canal adecuado según el tipo
-        const channelId = CHANNEL_ID;
-        const channel = await client.channels.fetch(channelId);
-        if (!channel) {
-            throw new Error('Canal no encontrado');
-        }
-        console.log(`Canal obtenido: ${channel.name}`);
-
-        // Construye el mensaje con el comando
-        const mensaje = `!darpuntosrol ${name} ${puntos}`;
-
-        // Envía el mensaje al canal
-        await channel.send(mensaje);
-        console.log('Mensaje enviado a Discord');
-    } catch (error) {
-        console.error('Error al enviar mensaje a Discord:', error);
-    }
-}
 
 async function updateUserChangeName(tabla, userID, newCharacterName) {
     return new Promise((resolve, reject) => {
@@ -161,49 +135,33 @@ async function decisionHistoria(playa, tablaHistoria, id, decision) {
 
             const historia = results[0];
 
-            // Obtener el Name del Owner desde la tabla playa
-            const getNameQuery = `SELECT Name FROM ${playa} WHERE ID = ?`;
-            conexion.query(getNameQuery, [historia.Owner], (err, nameResults) => {
-                if (err) {
-                    return reject(err);
-                }
+            if (decision === 'aprobar') {
+                // Si se aprueba, mover los datos a la tabla PlayaRP y eliminar el registro de TABLA_HISTORIA
+                const insertPlayaRPQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
+                conexion.query(insertPlayaRPQuery, [historia.Historia, historia.Owner], (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
 
-                if (nameResults.length === 0) {
-                    return reject(new Error('Nombre no encontrado.'));
-                }
-
-                const name = nameResults[0].Name;
-
-                enviarMensajeDiscord(name, 3);
-
-                if (decision === 'aprobar') {
-                    // Si se aprueba, mover los datos a la tabla PlayaRP y eliminar el registro de TABLA_HISTORIA
-                    const insertPlayaRPQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
-                    conexion.query(insertPlayaRPQuery, [historia.Historia, historia.Owner], (err) => {
-                        if (err) {
-                            return reject(err);
-                        }
-
-                        // Eliminar el registro de TABLA_HISTORIA
-                        const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-                        conexion.query(deleteHistoriaQuery, [id], (err) => {
-                            if (err) {
-                                return reject(err);
-                            }
-                            resolve({ message: 'Historia aprobada y movida a PlayaRP.' });
-                        });
-                    });
-                } else if (decision === 'rechazar') {
-                    // Si se rechaza, solo eliminar el registro de TABLA_HISTORIA
+                    // Eliminar el registro de TABLA_HISTORIA
                     const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
                     conexion.query(deleteHistoriaQuery, [id], (err) => {
                         if (err) {
                             return reject(err);
                         }
-                        resolve({ message: 'Historia rechazada.' });
+                        resolve({ message: 'Historia aprobada y movida a PlayaRP.' });
                     });
-                }
-            });
+                });
+            } else if (decision === 'rechazar') {
+                // Si se rechaza, solo eliminar el registro de TABLA_HISTORIA
+                const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+                conexion.query(deleteHistoriaQuery, [id], (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve({ message: 'Historia rechazada.' });
+                });
+            }
         });
     });
 }
