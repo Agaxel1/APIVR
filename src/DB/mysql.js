@@ -3,6 +3,10 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const config = require('../config');
 const sampQuery = require('samp-query');
+const { client, waitForClientReady } = require('../discordClient');
+const { EmbedBuilder } = require('discord.js');
+require('dotenv').config();
+const CHANNEL_ID_HISTORIA = process.env.DISCORD_CHANNEL_ID_HISTORIA;
 
 const dbconfig = {
     host: config.mysql.host,
@@ -116,54 +120,100 @@ function getHistoriaDetalles(tabla, id) {
     });
 }
 
-async function decisionHistoria(playa, tablaHistoria, id, decision) {
-    return new Promise((resolve, reject) => {
+// Función para dividir una historia en varias partes si excede 1024 caracteres
+function dividirHistoriaEnPartes(historia, maxLength = 1024) {
+    const partes = [];
+    for (let i = 0; i < historia.length; i += maxLength) {
+        partes.push(historia.slice(i, i + maxLength));
+    }
+    return partes;
+}
+
+async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, adminName) {
+    try {
+        // Asegúrate de que el cliente de Discord esté listo
+        await waitForClientReady();
+        console.log('Cliente de Discord está listo para enviar mensaje');
+
+        // Obtener el canal
+        const channel = await client.channels.fetch(CHANNEL_ID_HISTORIA);
+        if (!channel) {
+            throw new Error('Canal no encontrado');
+        }
+        console.log(`Canal obtenido: ${channel.name}`);
+
+        // Dividir la historia en partes si excede los 1024 caracteres
+        const historiaPartes = dividirHistoriaEnPartes(historia);
+
+        // Crear el embed
+        const embed = new EmbedBuilder()
+            .setTitle(`Historia Aprobada de ${ownerName}#${ownerID}`)
+            .setDescription(`La historia ha sido aprobada por el administrador/profesor **${adminName}#${adminID}**.`)
+            .setColor(0x00FF00) // Color verde para indicar aprobación
+            .setTimestamp() // Añadir el tiempo actual
+            .setFooter({ text: 'Sistema de Aprobación de Historias' });
+
+        // Añadir cada parte de la historia al embed
+        historiaPartes.forEach((parte) => {
+            embed.addFields({ name: '\u200B', value: parte });
+        });
+
+        // Enviar el embed al canal
+        await channel.send({ embeds: [embed] });
+
+        console.log('Mensaje enviado a Discord');
+    } catch (error) {
+        console.error('Error al enviar mensaje a Discord:', error);
+    }
+}
+
+async function decisionHistoria(playa, tablaHistoria, id, decision, admin = 56) {
+    try {
         if (decision !== 'aprobar' && decision !== 'rechazar') {
-            return reject(new Error('Decisión no válida.'));
+            throw new Error('Decisión no válida.');
         }
 
-        // Primero, obtener los detalles de la historia
-        const getHistoriaQuery = `SELECT ID, Owner, Historia FROM ${tablaHistoria} WHERE ID = ?`;
-        conexion.query(getHistoriaQuery, [id], (err, results) => {
-            if (err) {
-                return reject(err);
-            }
+        // Obtener los detalles de la historia y el dueño en una sola consulta
+        const getHistoriaAndOwnerQuery = `
+            SELECT h.ID, h.Owner, h.Historia, p.Name as ownerName 
+            FROM ${tablaHistoria} h
+            JOIN ${playa} p ON h.Owner = p.ID
+            WHERE h.ID = ?`;
+        const [historia] = await query(getHistoriaAndOwnerQuery, [id]);
+        
+        if (!historia) {
+            throw new Error('Historia no encontrada.');
+        }
 
-            if (results.length === 0) {
-                return reject(new Error('Historia no encontrada.'));
-            }
+        // Obtener los nombres de los admins
+        const getAdminNameQuery = `SELECT Name FROM ${playa} WHERE ID = ?`;
+        const [adminData] = await query(getAdminNameQuery, [admin]);
+        if (!adminData) {
+            throw new Error('Admin no encontrado.');
+        }
 
-            const historia = results[0];
+        const adminName = adminData.Name;
 
-            if (decision === 'aprobar') {
-                // Si se aprueba, mover los datos a la tabla PlayaRP y eliminar el registro de TABLA_HISTORIA
-                const insertPlayaRPQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
-                conexion.query(insertPlayaRPQuery, [historia.Historia, historia.Owner], (err) => {
-                    if (err) {
-                        return reject(err);
-                    }
+        if (decision === 'aprobar') {
+            // Aprobar la historia
+            const updatePlayaQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
+            await query(updatePlayaQuery, [historia.Historia, historia.Owner]);
 
-                    // Eliminar el registro de TABLA_HISTORIA
-                    const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-                    conexion.query(deleteHistoriaQuery, [id], (err) => {
-                        if (err) {
-                            return reject(err);
-                        }
-                        resolve({ message: 'Historia aprobada y movida a PlayaRP.' });
-                    });
-                });
-            } else if (decision === 'rechazar') {
-                // Si se rechaza, solo eliminar el registro de TABLA_HISTORIA
-                const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-                conexion.query(deleteHistoriaQuery, [id], (err) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve({ message: 'Historia rechazada.' });
-                });
-            }
-        });
-    });
+            const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+            await query(deleteHistoriaQuery, [id]);
+
+            // Enviar mensaje a Discord
+            await enviarMensajeDiscord(historia.Owner, historia.ownerName, historia.Historia, admin, adminName);
+        } else if (decision === 'rechazar') {
+            const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+            await query(deleteHistoriaQuery, [id]);
+        }
+
+        return { message: `Historia ${decision} con éxito.` };
+    } catch (error) {
+        console.error('Error al procesar la decisión de la historia:', error);
+        throw error;
+    }
 }
 
 
