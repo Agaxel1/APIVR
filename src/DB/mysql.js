@@ -168,54 +168,78 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
 }
 
 async function decisionHistoria(playa, tablaHistoria, id, decision, admin = 56) {
-    try {
+    return new Promise((resolve, reject) => {
         if (decision !== 'aprobar' && decision !== 'rechazar') {
-            throw new Error('Decisión no válida.');
+            return reject(new Error('Decisión no válida.'));
         }
 
-        // Obtener los detalles de la historia y el dueño en una sola consulta
+        // Obtener los detalles de la historia y el dueño
         const getHistoriaAndOwnerQuery = `
             SELECT h.ID, h.Owner, h.historia, p.Name as ownerName 
             FROM ${tablaHistoria} h
             JOIN ${playa} p ON h.Owner = p.ID
             WHERE h.ID = ?`;
-        const [historia] = await query(getHistoriaAndOwnerQuery, [id]);
-        
-        if (!historia) {
-            throw new Error('Historia no encontrada.');
-        }
+        conexion.query(getHistoriaAndOwnerQuery, [id], (err, historiaResults) => {
+            if (err) {
+                return reject(err);
+            }
 
-        // Obtener los nombres de los admins
-        const getAdminNameQuery = `SELECT Name FROM ${playa} WHERE ID = ?`;
-        const [adminData] = await query(getAdminNameQuery, [admin]);
-        if (!adminData) {
-            throw new Error('Admin no encontrado.');
-        }
+            const historia = historiaResults[0];
+            if (!historia) {
+                return reject(new Error('Historia no encontrada.'));
+            }
 
-        const adminName = adminData.Name;
+            // Obtener el nombre del admin
+            const getAdminNameQuery = `SELECT Name FROM ${playa} WHERE ID = ?`;
+            conexion.query(getAdminNameQuery, [admin], (err, adminResults) => {
+                if (err) {
+                    return reject(err);
+                }
 
-        if (decision === 'aprobar') {
-            // Aprobar la historia
-            const updatePlayaQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
-            await query(updatePlayaQuery, [historia.Historia, historia.Owner]);
+                const adminData = adminResults[0];
+                if (!adminData) {
+                    return reject(new Error('Admin no encontrado.'));
+                }
 
-            const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-            await query(deleteHistoriaQuery, [id]);
+                const adminName = adminData.Name;
 
-            // Enviar mensaje a Discord
-            await enviarMensajeDiscord(historia.Owner, historia.ownerName, historia.Historia, admin, adminName);
-        } else if (decision === 'rechazar') {
-            const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-            await query(deleteHistoriaQuery, [id]);
-        }
+                if (decision === 'aprobar') {
+                    // Aprobar la historia
+                    const updatePlayaQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
+                    conexion.query(updatePlayaQuery, [historia.historia, historia.Owner], (err) => {
+                        if (err) {
+                            return reject(err);
+                        }
 
-        return { message: `Historia ${decision} con éxito.` };
-    } catch (error) {
-        console.error('Error al procesar la decisión de la historia:', error);
-        throw error;
-    }
+                        const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+                        conexion.query(deleteHistoriaQuery, [id], async (err) => {
+                            if (err) {
+                                return reject(err);
+                            }
+
+                            // Enviar mensaje a Discord
+                            try {
+                                await enviarMensajeDiscord(historia.Owner, historia.ownerName, historia.historia, admin, adminName);
+                                resolve({ message: 'Historia aprobada con éxito.' });
+                            } catch (discordError) {
+                                reject(discordError);
+                            }
+                        });
+                    });
+                } else if (decision === 'rechazar') {
+                    // Rechazar la historia
+                    const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+                    conexion.query(deleteHistoriaQuery, [id], (err) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        resolve({ message: 'Historia rechazada con éxito.' });
+                    });
+                }
+            });
+        });
+    });
 }
-
 
 
 
