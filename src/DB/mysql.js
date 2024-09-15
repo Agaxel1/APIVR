@@ -175,7 +175,7 @@ async function decisionHistoria(playa, tablaHistoria, id, decision, admin = 56) 
 
         // Obtener los detalles de la historia y el dueño en una sola consulta
         const getHistoriaAndOwnerQuery = `
-            SELECT h.ID, h.Owner, h.Historia, p.Name as ownerName 
+            SELECT h.ID, h.Owner, h.historia, p.Name as ownerName 
             FROM ${tablaHistoria} h
             JOIN ${playa} p ON h.Owner = p.ID
             WHERE h.ID = ?`;
