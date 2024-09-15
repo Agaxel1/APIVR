@@ -36,9 +36,9 @@ module.exports = function (dbInyectada) {
         }
     }
 
-    async function decisionHistoria(id, decision, admin) {
+    async function decisionHistoria(id, decision) {
         try {
-            const result = await db.decisionHistoria(TABLA_ESTADISTICAS, TABLA_HISTORIA, id, decision, admin);
+            const result = await db.decisionHistoria(TABLA_ESTADISTICAS, TABLA_HISTORIA, id, decision);
             return result;
         } catch (error) {
             throw error;

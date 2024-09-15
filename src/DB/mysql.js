@@ -168,7 +168,7 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
 }
 
 
-async function decisionHistoria(playa, tablaHistoria, id, decision, admin) {
+async function decisionHistoria(playa, tablaHistoria, id, decision, admin=56) {
     return new Promise((resolve, reject) => {
         if (decision !== 'aprobar' && decision !== 'rechazar') {
             return reject(new Error('Decisión no válida.'));
