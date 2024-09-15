@@ -56,13 +56,13 @@ async function getHistoriaDetalles(req, res) {
 
 // Aprobar o rechazar una historia
 async function decidirHistoria(req, res) {
-    const { historiaID, decision } = req.body;
+    const { historiaID, decision, AdminID } = req.body;
     try {
         if (!decision || (decision !== 'aprobar' && decision !== 'rechazar')) {
             return respuestas.error(req, res, 'Decisión no válida.', 400);
         }
 
-        const result = await controlador.decisionHistoria(historiaID, decision);
+        const result = await controlador.decisionHistoria(historiaID, decision, AdminID);
         respuestas.success(req, res, result, 200);
     } catch (err) {
         console.error('Error al procesar la decisión de la historia:', err);
