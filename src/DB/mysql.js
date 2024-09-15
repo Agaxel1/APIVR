@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const sampQuery = require('samp-query');
 const { client, waitForClientReady } = require('../discordClient');
+const { EmbedBuilder } = require('discord.js');
 require('dotenv').config();
 const CHANNEL_ID_HISTORIA = process.env.DISCORD_CHANNEL_ID_HISTORIA;
 
