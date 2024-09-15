@@ -133,6 +133,14 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
         }
         console.log(`Canal obtenido: ${channel.name}`);
 
+        // Verificar si la historia supera el límite de 1024 caracteres
+        let historiaField;
+        if (historia.length > 1024) {
+            historiaField = `${historia.substring(0, 1021)}...`; // Truncar y añadir "..."
+        } else {
+            historiaField = historia;
+        }
+
         // Crear el embed
         const embed = new EmbedBuilder()
             .setTitle(`Historia Aprobada de ${ownerName}#${ownerID}`)
@@ -140,7 +148,7 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
             .setColor(0x00FF00) // Color verde para indicar aprobación
             .setTimestamp() // Añadir el tiempo actual
             .addFields(
-                { name: 'Historia', value: historia }
+                { name: 'Historia', value: historiaField }
             )
             .setFooter({ text: 'Sistema de Aprobación de Historias' });
 
@@ -152,6 +160,7 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
         console.error('Error al enviar mensaje a Discord:', error);
     }
 }
+
 
 async function decisionHistoria(playa, tablaHistoria, id, decision, admin) {
     return new Promise((resolve, reject) => {
