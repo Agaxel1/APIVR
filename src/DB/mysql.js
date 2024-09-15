@@ -154,8 +154,8 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
             .setFooter({ text: 'Sistema de Aprobación de Historias' });
 
         // Añadir cada parte de la historia al embed
-        historiaPartes.forEach((parte, index) => {
-            embed.addFields({ name: `Historia (parte ${index + 1})`, value: parte });
+        historiaPartes.forEach((parte) => {
+            embed.addFields({ name: '\u200B', value: parte });
         });
 
         // Enviar el embed al canal
