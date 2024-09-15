@@ -120,6 +120,15 @@ function getHistoriaDetalles(tabla, id) {
     });
 }
 
+// Función para dividir una historia en varias partes si excede 1024 caracteres
+function dividirHistoriaEnPartes(historia, maxLength = 1024) {
+    const partes = [];
+    for (let i = 0; i < historia.length; i += maxLength) {
+        partes.push(historia.slice(i, i + maxLength));
+    }
+    return partes;
+}
+
 async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, adminName) {
     try {
         // Asegúrate de que el cliente de Discord esté listo
@@ -133,13 +142,8 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
         }
         console.log(`Canal obtenido: ${channel.name}`);
 
-        // Verificar si la historia supera el límite de 1024 caracteres
-        let historiaField;
-        if (historia.length > 1024) {
-            historiaField = `${historia.substring(0, 1021)}...`; // Truncar y añadir "..."
-        } else {
-            historiaField = historia;
-        }
+        // Dividir la historia en partes si excede los 1024 caracteres
+        const historiaPartes = dividirHistoriaEnPartes(historia);
 
         // Crear el embed
         const embed = new EmbedBuilder()
@@ -147,10 +151,12 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
             .setDescription(`La historia ha sido aprobada por el administrador **${adminName}#${adminID}**.`)
             .setColor(0x00FF00) // Color verde para indicar aprobación
             .setTimestamp() // Añadir el tiempo actual
-            .addFields(
-                { name: 'Historia', value: historiaField }
-            )
             .setFooter({ text: 'Sistema de Aprobación de Historias' });
+
+        // Añadir cada parte de la historia al embed
+        historiaPartes.forEach((parte, index) => {
+            embed.addFields({ name: `Historia (parte ${index + 1})`, value: parte });
+        });
 
         // Enviar el embed al canal
         await channel.send({ embeds: [embed] });
