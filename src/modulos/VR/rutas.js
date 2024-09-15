@@ -58,7 +58,7 @@ async function getHistoriaDetalles(req, res) {
 async function decidirHistoria(req, res) {
     const { historiaID, decision, AdminID } = req.body;
     try {
-        if (!decision || (decision !== 'aprobar' && decision !== 'rechazar')) {
+        if (!AdminID || !decision || (decision !== 'aprobar' && decision !== 'rechazar')) {
             return respuestas.error(req, res, 'Decisión no válida.', 400);
         }
 

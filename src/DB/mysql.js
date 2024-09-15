@@ -148,7 +148,7 @@ async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, admin
         // Crear el embed
         const embed = new EmbedBuilder()
             .setTitle(`Historia Aprobada de ${ownerName}#${ownerID}`)
-            .setDescription(`La historia ha sido aprobada por el administrador **${adminName}#${adminID}**.`)
+            .setDescription(`La historia ha sido aprobada por el administrador/profesor **${adminName}#${adminID}**.`)
             .setColor(0x00FF00) // Color verde para indicar aprobación
             .setTimestamp() // Añadir el tiempo actual
             .setFooter({ text: 'Sistema de Aprobación de Historias' });
