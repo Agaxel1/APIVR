@@ -228,7 +228,7 @@ async function decisionHistoria(playa, tablaHistoria, id, decision, admin=56) {
                                 }
 
                                 // Solo enviar el mensaje a Discord cuando la historia es aprobada
-                                enviarMensajeDiscord(historia.Owner, ownerName, historia.Historia, admin, adminNames);
+                               // enviarMensajeDiscord(historia.Owner, ownerName, historia.Historia, admin, adminNames);
                             });
                         });
                     } else if (decision === 'rechazar') {
