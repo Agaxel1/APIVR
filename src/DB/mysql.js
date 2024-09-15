@@ -3,10 +3,6 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const config = require('../config');
 const sampQuery = require('samp-query');
-const { client, waitForClientReady } = require('../discordClient');
-const { EmbedBuilder } = require('discord.js');
-require('dotenv').config();
-const CHANNEL_ID_HISTORIA = process.env.DISCORD_CHANNEL_ID_HISTORIA;
 
 const dbconfig = {
     host: config.mysql.host,
@@ -120,55 +116,7 @@ function getHistoriaDetalles(tabla, id) {
     });
 }
 
-// Función para dividir una historia en varias partes si excede 1024 caracteres
-function dividirHistoriaEnPartes(historia, maxLength = 1024) {
-    const partes = [];
-    for (let i = 0; i < historia.length; i += maxLength) {
-        partes.push(historia.slice(i, i + maxLength));
-    }
-    return partes;
-}
-
-async function enviarMensajeDiscord(ownerID, ownerName, historia, adminID, adminName) {
-    try {
-        // Asegúrate de que el cliente de Discord esté listo
-        await waitForClientReady();
-        console.log('Cliente de Discord está listo para enviar mensaje');
-
-        // Obtener el canal
-        const channel = await client.channels.fetch(CHANNEL_ID_HISTORIA);
-        if (!channel) {
-            throw new Error('Canal no encontrado');
-        }
-        console.log(`Canal obtenido: ${channel.name}`);
-
-        // Dividir la historia en partes si excede los 1024 caracteres
-        const historiaPartes = dividirHistoriaEnPartes(historia);
-
-        // Crear el embed
-        const embed = new EmbedBuilder()
-            .setTitle(`Historia Aprobada de ${ownerName}#${ownerID}`)
-            .setDescription(`La historia ha sido aprobada por el administrador/profesor **${adminName}#${adminID}**.`)
-            .setColor(0x00FF00) // Color verde para indicar aprobación
-            .setTimestamp() // Añadir el tiempo actual
-            .setFooter({ text: 'Sistema de Aprobación de Historias' });
-
-        // Añadir cada parte de la historia al embed
-        historiaPartes.forEach((parte) => {
-            embed.addFields({ name: '\u200B', value: parte });
-        });
-
-        // Enviar el embed al canal
-        await channel.send({ embeds: [embed] });
-
-        console.log('Mensaje enviado a Discord');
-    } catch (error) {
-        console.error('Error al enviar mensaje a Discord:', error);
-    }
-}
-
-
-async function decisionHistoria(playa, tablaHistoria, id, decision, admin=56) {
+async function decisionHistoria(playa, tablaHistoria, id, decision) {
     return new Promise((resolve, reject) => {
         if (decision !== 'aprobar' && decision !== 'rechazar') {
             return reject(new Error('Decisión no válida.'));
@@ -187,62 +135,33 @@ async function decisionHistoria(playa, tablaHistoria, id, decision, admin=56) {
 
             const historia = results[0];
 
-            // Consultar el nombre del Owner
-            const getOwnerNameQuery = `SELECT Name FROM ${playa} WHERE ID = ?`;
-            conexion.query(getOwnerNameQuery, [historia.Owner], (err, ownerResults) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                if (ownerResults.length === 0) {
-                    return reject(new Error('Owner no encontrado.'));
-                }
-
-                const ownerName = ownerResults[0].Name;
-
-                // Consultar los nombres de los admins
-                const getAdminNamesQuery = `SELECT Name FROM ${playa} WHERE ID = ?`;
-                conexion.query(getAdminNamesQuery, [admin], (err, adminResults) => {
+            if (decision === 'aprobar') {
+                // Si se aprueba, mover los datos a la tabla PlayaRP y eliminar el registro de TABLA_HISTORIA
+                const insertPlayaRPQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
+                conexion.query(insertPlayaRPQuery, [historia.Historia, historia.Owner], (err) => {
                     if (err) {
                         return reject(err);
                     }
 
-                    if (adminResults.length === 0) {
-                        return reject(new Error('Admin no encontrado.'));
-                    }
-
-                    const adminNames = adminResults.map((admin) => admin.Name).join(', ');
-
-                    // Ejecutar la decisión (aprobar o rechazar)
-                    if (decision === 'aprobar') {
-                        const insertPlayaRPQuery = `UPDATE ${playa} SET historia = ? WHERE ID = ?`;
-                        conexion.query(insertPlayaRPQuery, [historia.Historia, historia.Owner], (err) => {
-                            if (err) {
-                                return reject(err);
-                            }
-
-                            const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-                            conexion.query(deleteHistoriaQuery, [id], (err) => {
-                                if (err) {
-                                    return reject(err);
-                                }
-
-                                // Solo enviar el mensaje a Discord cuando la historia es aprobada
-                               // enviarMensajeDiscord(historia.Owner, ownerName, historia.Historia, admin, adminNames);
-                            });
-                        });
-                    } else if (decision === 'rechazar') {
-                        const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
-                        conexion.query(deleteHistoriaQuery, [id], (err) => {
-                            if (err) {
-                                return reject(err);
-                            }
-
-                            resolve({ message: 'Historia rechazada.' });
-                        });
-                    }
+                    // Eliminar el registro de TABLA_HISTORIA
+                    const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+                    conexion.query(deleteHistoriaQuery, [id], (err) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        resolve({ message: 'Historia aprobada y movida a PlayaRP.' });
+                    });
                 });
-            });
+            } else if (decision === 'rechazar') {
+                // Si se rechaza, solo eliminar el registro de TABLA_HISTORIA
+                const deleteHistoriaQuery = `DELETE FROM ${tablaHistoria} WHERE ID = ?`;
+                conexion.query(deleteHistoriaQuery, [id], (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve({ message: 'Historia rechazada.' });
+                });
+            }
         });
     });
 }
