@@ -1,8 +1,17 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
+const CryptoJS = require('crypto-js');
 
 const router = express.Router();
+
+const encryptionKey = 'mi-clave-secreta-12345';
+
+// Función para cifrar datos
+function encryptData(data) {
+    return CryptoJS.AES.encrypt(JSON.stringify(data), encryptionKey).toString();
+}
+
 
 // Rutas para cada sección
 router.get('/estadisticas', getEstadisticas);
@@ -193,7 +202,10 @@ async function getEstadisticas(req, res) {
     const Name = req.query.Name;
     try {
         const estadisticas = await controlador.getEstadisticas(userID, Name);
-        respuestas.success(req, res, estadisticas, 200);
+        // Cifrar la respuesta
+        const encryptedResponse = encryptData(estadisticas);
+
+        respuestas.success(req, res, encryptedResponse, 200);
     } catch (error) {
         console.error('Error al obtener estadísticas:', error);
         respuestas.error(req, res, 'Error al obtener estadísticas', 500);
