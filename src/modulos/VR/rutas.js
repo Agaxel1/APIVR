@@ -228,6 +228,7 @@ async function getCasas(req, res) {
     const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
         const casas = await controlador.getCasas(userID);
+        console.log(casas);
         respuestas.success(req, res, casas, 200);
     } catch (error) {
         console.error('Error al obtener casas:', error);
