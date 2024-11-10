@@ -10,6 +10,10 @@ const datos = require('./modulos/Datos/rutas');
 const logueo = require('./modulos/Logueo/rutas');
 const VR = require('./modulos/VR/rutas');
 
+const crypto = require('crypto');
+const secretKey = 'LALALA?=?5645';
+
+
 const app = express();
 
 app.use(morgan('dev'));
@@ -35,6 +39,22 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Función para cifrar datos
+function encryptData(data) {
+    const cipher = crypto.createCipher('aes-256-cbc', secretKey);
+    let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+    return encrypted;
+}
+
+// Función para descifrar datos
+function decryptData(encryptedData) {
+    const decipher = crypto.createDecipher('aes-256-cbc', secretKey);
+    let decrypted = decipher.update(encryptedData, 'base64', 'utf8');
+    decrypted += decipher.final('utf8');
+    return JSON.parse(decrypted);
+}
+
 app.set('port', config.app.port);
 
 app.use('/api/posts', posts);
@@ -44,3 +64,5 @@ app.use('/api/logueo', logueo);
 app.use('/api/VR', VR);
 
 module.exports = app;
+module.exports.encryptData = encryptData;
+module.exports.decryptData = decryptData;
