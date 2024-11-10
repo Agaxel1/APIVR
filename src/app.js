@@ -9,6 +9,7 @@ const anuncios = require('./modulos/anuncios/rutas');
 const datos = require('./modulos/Datos/rutas');
 const logueo = require('./modulos/Logueo/rutas');
 const VR = require('./modulos/VR/rutas');
+const { encryptResponse, decryptRequest } = require('./encryptionMiddleware');
 
 const app = express();
 
@@ -36,6 +37,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.set('port', config.app.port);
+
+app.use(decryptRequest);  // Descifra los datos de las solicitudes entrantes
+app.use(encryptResponse); // Cifra los datos de las respuestas salientes
 
 app.use('/api/posts', posts);
 app.use('/api/anuncios', anuncios);
