@@ -187,7 +187,7 @@ async function getTops(req, res) {
         respuestas.error(req, res, 'Error al obtener TOPS', 500);
     }
 }
-console.log(encryptData);
+console.log("Hola encript" + encryptData);
 // Controladores para las rutas
 async function getEstadisticas(req, res) {
     const userID = req.query.userID;
