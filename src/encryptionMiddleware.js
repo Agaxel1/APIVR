@@ -1,16 +1,17 @@
 // encryptionMiddleware.js
 const crypto = require('crypto');
 const SECRET_KEY = 'claveVR??=A';
+const IV = Buffer.from('1234567890123456'); // IV fijo de 16 bytes; puedes cambiarlo a otro valor seguro
 
 function encrypt(text) {
-    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(SECRET_KEY), Buffer.from(SECRET_KEY.slice(0, 16)));
+    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(SECRET_KEY), IV);
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     return encrypted;
 }
 
 function decrypt(text) {
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(SECRET_KEY), Buffer.from(SECRET_KEY.slice(0, 16)));
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(SECRET_KEY), IV);
     let decrypted = decipher.update(text, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
