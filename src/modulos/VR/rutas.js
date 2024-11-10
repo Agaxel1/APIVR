@@ -1,7 +1,6 @@
 const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
-const { encryptData } = require('../../app');
 
 const router = express.Router();
 
@@ -102,10 +101,10 @@ async function saveHistoria(req, res) {
 
 async function Questions(req, res) {
     const { type } = req.query;
+
     try {
         const questions = await controlador.getQuestions(type);
-        const encryptedResponse = encryptData(questions); // Encriptar la respuesta
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, questions, 200);
     } catch (error) {
         console.error('Error al obtener preguntas:', error);
         respuestas.error(req, res, 'Error al obtener preguntas', 500);
@@ -187,15 +186,14 @@ async function getTops(req, res) {
         respuestas.error(req, res, 'Error al obtener TOPS', 500);
     }
 }
-console.log("Hola encript" + encryptData);
+
 // Controladores para las rutas
 async function getEstadisticas(req, res) {
-    const userID = req.query.userID;
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     const Name = req.query.Name;
     try {
         const estadisticas = await controlador.getEstadisticas(userID, Name);
-        const encryptedResponse = encryptData(estadisticas); // Encriptar la respuesta
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, estadisticas, 200);
     } catch (error) {
         console.error('Error al obtener estadísticas:', error);
         respuestas.error(req, res, 'Error al obtener estadísticas', 500);
@@ -203,23 +201,23 @@ async function getEstadisticas(req, res) {
 }
 
 async function getAutos(req, res) {
-    const userID = req.query.userID;
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
         const data = await controlador.getAutos(userID);
-        const encryptedResponse = encryptData(data); // Encriptar la respuesta
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, data, 200);
     } catch (error) {
         console.error('Error al obtener autos:', error);
         respuestas.error(req, res, 'Error al obtener autos', 500);
     }
 }
 
+
+
 async function getNegocios(req, res) {
-    const userID = req.query.userID;
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
         const negocios = await controlador.getNegocios(userID);
-        const encryptedResponse = encryptData(negocios); // Encriptar la respuesta
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, negocios, 200);
     } catch (error) {
         console.error('Error al obtener negocios:', error);
         respuestas.error(req, res, 'Error al obtener negocios', 500);
@@ -227,11 +225,10 @@ async function getNegocios(req, res) {
 }
 
 async function getCasas(req, res) {
-    const userID = req.query.userID;
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
         const casas = await controlador.getCasas(userID);
-        const encryptedResponse = encryptData(casas); // Encriptar la respuesta
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, casas, 200);
     } catch (error) {
         console.error('Error al obtener casas:', error);
         respuestas.error(req, res, 'Error al obtener casas', 500);
@@ -239,11 +236,10 @@ async function getCasas(req, res) {
 }
 
 async function getMovimientos(req, res) {
-    const userID = req.query.userID;
+    const userID = req.query.userID; // Asegúrate de que estás obteniendo el userID de la manera correcta
     try {
         const movimientos = await controlador.getMovimientos(userID);
-        const encryptedResponse = encryptData(movimientos); // Encriptar la respuesta
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, movimientos, 200);
     } catch (error) {
         console.error('Error al obtener movimientos:', error);
         respuestas.error(req, res, 'Error al obtener movimientos', 500);

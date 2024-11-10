@@ -2,7 +2,6 @@ const express = require('express');
 const respuestas = require('../../red/respuestas');
 const controlador = require('./index');
 const { NULL } = require('mysql/lib/protocol/constants/types');
-const { encryptData } = require('../../app');
 
 const router = express.Router();
 
@@ -24,11 +23,7 @@ async function getAnuncios(req, res) {
             limite,
             totalPages: Math.ceil(total / limite),
         };
-
-        // Encriptar la respuesta
-        const encryptedResponse = encryptData(response);
-
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, response, 200);
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
@@ -49,11 +44,7 @@ async function getUserAnuncios(req, res) {
             limite,
             totalPages: Math.ceil(total / limite),
         };
-
-        // Encriptar la respuesta
-        const encryptedResponse = encryptData(response);
-
-        respuestas.success(req, res, { data: encryptedResponse }, 200);
+        respuestas.success(req, res, response, 200);
     } catch (err) {
         respuestas.error(req, res, err, 500);
     }
