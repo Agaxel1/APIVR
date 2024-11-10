@@ -113,7 +113,10 @@ async function Questions(req, res) {
 
     try {
         const questions = await controlador.getQuestions(type);
-        respuestas.success(req, res, questions, 200);
+        // Cifrar la respuesta
+        const encryptedResponse = encryptData(questions);
+
+        respuestas.success(req, res, encryptedResponse, 200);
     } catch (error) {
         console.error('Error al obtener preguntas:', error);
         respuestas.error(req, res, 'Error al obtener preguntas', 500);
