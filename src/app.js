@@ -63,6 +63,8 @@ app.use('/api/datos', datos);
 app.use('/api/logueo', logueo);
 app.use('/api/VR', VR);
 
-module.exports = app;
-module.exports.encryptData = encryptData;
-module.exports.decryptData = decryptData;
+module.exports = {
+    app,
+    encryptData,
+    decryptData
+};
