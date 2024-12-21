@@ -912,7 +912,7 @@ function confirmUserRegistration(token) {
             }
 
             // Extraer los datos del usuario
-            const { username, email, password_hash, Salt, Gorod, Sex, Race } = results[0];
+            const { username, email, Discord, password_hash, Salt, Gorod, Sex, Race } = results[0];
 
             // Asignar el valor de Skin según el valor de Sex
             let Skin = (Sex === 1) ? 26 : 13;
@@ -920,13 +920,13 @@ function confirmUserRegistration(token) {
             // Insertar el usuario en la tabla de PlayaRP confirmados
             const insertQuery = `
                 INSERT INTO PlayaRP (
-                    Name, Mail, Pass, Salt, Sex, Race, MoneyVR, Skin, Level, Eat, Need, Soif, Sleep, Higiene, Diversion, Shame, Enfermedad, Alcohol, X, Y, Z, A, Inventory, Health, Gorod, Bank
+                    Name, Mail,Discord, Pass, Salt, Sex, Race, MoneyVR, Skin, Level, Eat, Need, Soif, Sleep, Higiene, Diversion, Shame, Enfermedad, Alcohol, X, Y, Z, A, Inventory, Health, Gorod, Bank
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, 0, 100, 100, 100, 100, 100, 100, 100, 0, 0, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?,?, ?, ?, ?, 0, 100, 100, 100, 100, 100, 100, 100, 0, 0, ?, ?, ?, ?, ?, ?, ?, ?
                 )
             `;
 
-            conexion.query(insertQuery, [username, email, password_hash, Salt, Sex, Race, MoneyVR, Skin, X, Y, Z, A, Inventory, Health, Gorod, Bank], (err, result) => {
+            conexion.query(insertQuery, [username, email, Discord, password_hash, Salt, Sex, Race, MoneyVR, Skin, X, Y, Z, A, Inventory, Health, Gorod, Bank], (err, result) => {
                 if (err) {
                     return reject(err);
                 }
